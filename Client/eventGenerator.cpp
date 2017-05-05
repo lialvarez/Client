@@ -33,6 +33,7 @@ void eventGenerator::generateEvent()
 		
 }
 
+
 genericEvent * eventGenerator::getNextEvent()
 {
 	genericEvent * ret;
