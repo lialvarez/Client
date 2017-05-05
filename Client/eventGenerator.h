@@ -18,7 +18,7 @@ public:
 
 protected:
 
-	boost::circular_buffer<genericEvent *> buffer(16);	//Buffer circular de 16 posiciones
+	boost::circular_buffer<genericEvent *> buffer;
 	usefulInfo* I;
 };
 
