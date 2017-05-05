@@ -142,6 +142,31 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="curses.h" />
+    <ClInclude Include="eventGenerator.h" />
+    <ClInclude Include="Events.h" />
+    <ClInclude Include="eventSources.h" />
+    <ClInclude Include="genericEvent.h" />
+    <ClInclude Include="genericEventSource.h" />
+    <ClInclude Include="genericFSM.h" />
+    <ClInclude Include="genericState.h" />
+    <ClInclude Include="panel.h" />
+    <ClInclude Include="parseCmdLine.h" />
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="States.h" />
+    <ClInclude Include="usefulInfo.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="eventGenerator.cpp" />
+    <ClCompile Include="Events.cpp" />
+    <ClCompile Include="eventSources.cpp" />
+    <ClCompile Include="genericEvent.cpp" />
+    <ClCompile Include="genericEventSource.cpp" />
+    <ClCompile Include="genericFSM.cpp" />
+    <ClCompile Include="parseCmdLine.c" />
+    <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="ST_Idle.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
