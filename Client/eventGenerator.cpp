@@ -43,7 +43,7 @@ genericEvent * eventGenerator::getNextEvent()
 	}
 	else
 	{
-		ret = nullptr;
+		ret = nullptr;	//Si no hay eventos en el buffer devuelve nullptr
 	}
 	return ret;
 }
