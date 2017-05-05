@@ -161,7 +161,6 @@
     <ClCompile Include="Events.cpp" />
     <ClCompile Include="eventSources.cpp" />
     <ClCompile Include="genericEvent.cpp" />
-    <ClCompile Include="genericEventSource.cpp" />
     <ClCompile Include="genericFSM.cpp" />
     <ClCompile Include="parseCmdLine.c" />
     <ClCompile Include="Screen.cpp" />
