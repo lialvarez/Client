@@ -10,7 +10,7 @@ public:
 	~genericEventSource();
 
 	virtual bool isThereEvent() = 0;	//forzar a hacer una funcion distinta de busqueda de eventos para cada fuente
-	virtual genericEvent* insertEvent() { return event; };
+	virtual genericEvent* insertEvent() = 0;
 
 protected:
 	eventCode evCode;

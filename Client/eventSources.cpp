@@ -1,5 +1,6 @@
 #include "eventSources.h"
 #include "Screen.h"
+#include "Events.h"
 #include <boost\algorithm\string\classification.hpp>
 #include <boost\algorithm\string\split.hpp>
 #include <boost\date_time\posix_time\posix_time.hpp>
@@ -23,12 +24,12 @@ std::string NetworkEventSource::getServerIP()
 
 UserEventSource::UserEventSource()
 {
-	initTerminal();
+	initTerminal();	//Inicializa la terminal por donde interactua el usuario
 }
 
 std::string UserEventSource::getFileToTransfer()
 {
-	return fileToTransfer;
+	return fileToTransfer;	//Devuelve el nombre del archivo a transferir
 }
 
 bool UserEventSource::isThereEvent()
@@ -160,6 +161,38 @@ bool UserEventSource::isThereEvent()
 	return ret;
 }
 
+genericEvent * UserEventSource::insertEvent()
+{
+	genericEvent * ret;
+	switch (evCode)
+	{
+	case NO_EV:
+		ret = (genericEvent *) new EV_NoEvent;
+		break;
+	case PUT:
+		ret = (genericEvent *) new EV_SendWRQ;
+		break;
+	case GET:
+		ret = (genericEvent *) new EV_SendRRQ;
+		break;
+	case HELP:
+		ret = (genericEvent *) new EV_HelpRequest;
+		break;
+	case CLEAR:
+		ret = (genericEvent *) new EV_ClearScreen;
+		break;
+	case INVALID:
+		ret = (genericEvent *) new EV_InvalidCommand;
+		break;
+	case FILE_ERROR:
+		ret = (genericEvent *) new EV_FileError;
+		break;
+	default:
+		break;
+	}
+	return ret;
+}
+
 /*****  TIMEOUTS EVENT SOURCE  *****/
 
 bool TimeoutEventSource::isThereEvent()
@@ -190,6 +223,20 @@ void TimeoutEventSource::startTimer()
 void TimeoutEventSource::stopTimer()
 {
 	timer.cancel();	//Se cancela el timer
+}
+
+genericEvent * TimeoutEventSource::insertEvent() 
+{
+	genericEvent * ret;
+	switch (evCode)
+	{
+	case TIMEOUT:
+		ret = (genericEvent *) new EV_Timeout;
+		break;
+	default:
+		ret = 
+		break;
+	}
 }
 /*****  SOFTWARE EVENT SOURCE   *****/
 

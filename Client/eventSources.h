@@ -7,6 +7,7 @@
 #include <boost\asio.hpp>
 #include "genericEventSource.h"
 
+
 class NetworkEventSource : public genericEventSource
 {
 public:
@@ -24,12 +25,9 @@ class UserEventSource : public genericEventSource
 public:
 
 	UserEventSource();
-	~UserEventSource();
-
 	bool isThereEvent();
 	std::string getFileToTransfer();
-
-
+	genericEvent* insertEvent();
 private:
 
 	std::string fileToTransfer;
@@ -51,7 +49,7 @@ public:
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
-
+	genericEvent* insertEvent();
 private:
 	boost::asio::io_service io;	
 	boost::asio::deadline_timer timer;
