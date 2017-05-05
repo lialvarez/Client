@@ -116,7 +116,7 @@ private:
 class EV_InvalidCommand : public genericEvent
 {
 public:
-	EV_InvalidCommand() { ev = INVALID_COMMAND; };
+	EV_InvalidCommand() { ev = INVALID; };
 	~EV_InvalidCommand();
 
 private:
