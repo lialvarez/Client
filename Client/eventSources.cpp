@@ -181,6 +181,8 @@ genericEvent * UserEventSource::insertEvent()
 	case CLEAR:
 		ret = (genericEvent *) new EV_ClearScreen;
 		break;
+	case EMPTY_COMMAND:
+
 	case INVALID:
 		ret = (genericEvent *) new EV_InvalidCommand;
 		break;

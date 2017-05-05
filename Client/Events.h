@@ -3,11 +3,11 @@
 
 #include "genericEvent.h"
 
-class EV_NoEvent
+class EV_EmptyCommand
 {
 public:
-	EV_NoEvent();
-	~EV_NoEvent();
+	EV_EmptyCommand();
+	~EV_EmptyCommand();
 
 private:
 
