@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 		do
 		{
 			//conectar()
+			//Seguramente va a haber que manejar una excepcion si no logra conecatarse
 			connectAttempt++;
 		} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
 		connectAttempt = 0;	//Reseteo el connect attempt
