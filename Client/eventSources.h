@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <boost\asio.hpp>
 #include "genericEventSource.h"
 
 class NetworkEventSource : public genericEventSource
@@ -45,13 +46,19 @@ private:
 class TimeoutEventSource : public genericEventSource
 {
 public:
-	TimeoutEventSource();
-	~TimeoutEventSource();
+
+	TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
 	bool isThereEvent();
-	//startTimer()	//TODO: agregar el timer de timeout y sus funciones de control
-	//stopTimer()
-	//getTimer()
+	void startTimer();
+	void stopTimer();
+
+private:
+	boost::asio::io_service io;	
+	boost::asio::deadline_timer timer;
+	bool timeout;
+	void setTimeout();
 };
+
 class SoftwareEventSource : public genericEventSource
 {
 public:

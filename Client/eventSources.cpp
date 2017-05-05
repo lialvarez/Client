@@ -2,6 +2,7 @@
 #include "Screen.h"
 #include <boost\algorithm\string\classification.hpp>
 #include <boost\algorithm\string\split.hpp>
+#include <boost\date_time\posix_time\posix_time.hpp>
 
 /*****  NETWORK EVENT SOURCE  *****/
 
@@ -159,27 +160,37 @@ bool UserEventSource::isThereEvent()
 	return ret;
 }
 
-genericEvent * 
+/*****  TIMEOUTS EVENT SOURCE  *****/
 
-
-/*****  TIMEPUTS EVENT SOURCE  *****/
-
-TimeoutEventSource::TimeoutEventSource() {};
-TimeoutEventSource::~TimeoutEventSource() {}
-bool TimeoutEventSource::isThereEvent() 
-{ 
-//TODO: escribir esto como la gente
-/*	if (timer == TO_TIME)
+bool TimeoutEventSource::isThereEvent()
+{
+	if (timeout)
 	{
-		evento_del_eventsource = ev_timeout;
-		return true
+		evCode = TIMEOUT;
+		return true;
 	}
 	else
 	{
-		evento_del_event_source = no_ev;
-		return false
-*/	};	//si hay timer con pdcurses, usar ese
+		evCode = NO_EV;
+		return false;
+	}
+}
 
+void TimeoutEventSource::setTimeout()
+{
+	timeout = true;	//Set timeout modifica una variable de control que indica si ocurrio un timeout
+}
+
+void TimeoutEventSource::startTimer()
+{
+	timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
+	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
+}
+
+void TimeoutEventSource::stopTimer()
+{
+	timer.cancel();	//Se cancela el timer
+}
 /*****  SOFTWARE EVENT SOURCE   *****/
 
 SoftwareEventSource::SoftwareEventSource() {};
