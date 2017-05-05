@@ -1,12 +1,10 @@
 #include "eventGenerator.h"
 
-
 eventGenerator::eventGenerator(usefulInfo* _I)
 {
 	I = _I;
 }
 eventGenerator::~eventGenerator() {};
-
 void eventGenerator::generateEvent()
 {
 	//Buffer FILO
@@ -32,7 +30,6 @@ void eventGenerator::generateEvent()
 	}
 		
 }
-
 genericEvent * eventGenerator::getNextEvent()
 {
 	genericEvent * ret;

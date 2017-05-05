@@ -3,141 +3,127 @@
 
 #include "genericEvent.h"
 
-class EV_EmptyCommand
+typedef char BYTE;
+
+//USER EVENTS
+
+class EV_Put :public genericEvent
 {
 public:
-	EV_EmptyCommand();
-	~EV_EmptyCommand();
+	EV_Put() { ev = PUT; };
+	~EV_Put();
 
 private:
 
 };
 
-class EV_SendWRQ :public genericEvent
+class EV_Get : public genericEvent
 {
 public:
-	EV_SendWRQ();
-	~EV_SendWRQ();
+	EV_Get() { ev = GET; };
+	~EV_Get();
 
 private:
 
 };
 
-class EV_SendRRQ :public genericEvent
+class EV_Quit : public genericEvent
 {
 public:
-	EV_SendRRQ();
-	~EV_SendRRQ();
+	EV_Quit() { ev = QUIT; };
+	~EV_Quit();
 
 private:
 
 };
 
-class EV_SendData
+class EV_Help : public genericEvent
 {
 public:
-	EV_SendData();
-	~EV_SendData();
-
-private:
-	unsigned int sentPckCounter;	//lleva la cuenta de paquetes enviados
-
-};
-
-
-class EV_SendLastData
-{
-public:
-	EV_SendLastData();
-	~EV_SendLastData();
-
-private:
-
-
-};
-
-class EV_CloseClient :public genericEvent
-{
-public:
-	EV_CloseClient();
-	~EV_CloseClient();
+	EV_Help() { ev = HELP; };
+	~EV_Help();
 
 private:
 
 };
 
-class EV_HelpRequest :public genericEvent
+class EV_Clear : public genericEvent
 {
 public:
-	EV_HelpRequest();
-	~EV_HelpRequest();
+	EV_Clear() { ev = CLEAR; };
+	~EV_Clear();
 
 private:
 
 };
 
-class EV_ClearScreen :public genericEvent
+//NETWORK EVENTS
+
+class EV_Data : public genericEvent
 {
 public:
-	EV_ClearScreen();
-	~EV_ClearScreen();
+	EV_Data() { ev = DATA; };
+	~EV_Data();
+
+	//TODO: funciones de cargar el buffer y de obetener la info
+
+private:
+	BYTE* dataBuffer;
+};
+
+class EV_Ack : public genericEvent
+{
+public:
+	EV_Ack() { ev = ACK; };
+	~EV_Ack();
 
 private:
 
 };
 
-class EV_ReceiveData :public genericEvent
+class EV_Error : public genericEvent
 {
 public:
-	EV_ReceiveData();
-	~EV_ReceiveData();
-
-private:
-	unsigned int 
-};
-
-class EV_ReceiveLastData :public genericEvent
-{
-public:
-	EV_ReceiveLastData();
-	~EV_ReceiveLastData();
+	EV_Error() { ev = ERROR; };
+	~EV_Error();
 
 private:
 
 };
 
-
-class EV_ReceiveAck :public genericEvent
+class EV_WRQ : public genericEvent
 {
 public:
-	EV_ReceiveAck();
-	~EV_ReceiveAck();
+	EV_WRQ() { ev = WRQ; };
+	~EV_WRQ();
+
+private:
+
+}; 
+
+class EV_RRQ : public genericEvent
+{
+public:
+	EV_RRQ() { ev = RRQ; };
+	~EV_RRQ();
 
 private:
 
 };
 
-class EV_ReceiveError :public genericEvent
+//SOFTWARE EVENTS
+
+class EV_InvalidCommand : public genericEvent
 {
 public:
-	EV_ReceiveError();
-	~EV_ReceiveError();
-
-private:
-
-};
-
-class EV_InvalidCommand :public genericEvent
-{
-public:
-	EV_InvalidCommand();
+	EV_InvalidCommand() { ev = INVALID_COMMAND; };
 	~EV_InvalidCommand();
 
 private:
 
 };
 
-class EV_ConnectionFailed :public genericEvent
+class EV_ConnectionFailed : public genericEvent
 {
 public:
 	EV_ConnectionFailed();
@@ -147,26 +133,37 @@ private:
 
 };
 
-class EV_Timeout :public genericEvent
+class EV_FileError : public genericEvent
 {
 public:
-	EV_Timeout();
-	~EV_Timeout();
-
-private:
-
-};
-
-class EV_FileError :public genericEvent
-{
-public:
-	EV_FileError();
+	EV_FileError() { ev = FILE_ERROR; };
 	~EV_FileError();
 
 private:
 
 };
 
+class EV_LastData : public genericEvent
+{
+public:
+	EV_LastData() { ev = LAST_DATA; };
+	~EV_LastData();
+
+private:
+
+};
+
+//TIMEOUT EVENT
+
+class EV_Timeout : public genericEvent
+{
+public:
+	EV_Timeout() { ev = TIMEOUT; };
+	~EV_Timeout();
+
+private:
+
+};
 
 #endif // !EVENTS_H
 
