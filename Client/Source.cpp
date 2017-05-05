@@ -6,6 +6,7 @@
 
 #define CALLBACK_ERROR	 0
 #define CALLBACK_OK		 1
+#define MAX_ATTEMPT
 
 int inputCallback(char *key, char *value, void * userData);
 
@@ -25,17 +26,34 @@ int main(int argc, char *argv[])
 	genericEvent *ev;
 	genericFSM fsm;
 
+	unsigned int connectAttempt = 0;
 	do
 	{
-		eg.generateEvent();
-		ev = eg.getNextEvent();
-
-		if (ev != nullptr)
+		do
 		{
-			fsm.dispatch(ev);
+			//conectar()
+			connectAttempt++;
+		} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
+		connectAttempt = 0;	//Reseteo el connect attempt
+		
+		if (/*connection failed*/)	//Si no hay conexion salgo del programa
+		{
+			//Salir del programa, no se pudo establecer conexion
 		}
-	} while (fsm.getCurrentState()->getLastEvent() != QUIT);
 
+		else do //Si hay conexion, entro en la FSM
+		{
+			eg.generateEvent();
+			ev = eg.getNextEvent();
+
+			if (ev != nullptr)
+			{
+				fsm.dispatch(ev);
+			}
+		} while (fsm.getCurrentState()->getLastEvent() != QUIT || fsm.getCurrentState()->getLastEvent() != CONNECTION_FAIL);
+
+	} while (fsm.getCurrentState()->getLastEvent() != QUIT);
+	
 }
 
 int inputCallback(char *key, char *value, void * userData)
