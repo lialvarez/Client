@@ -22,6 +22,8 @@ std::string NetworkEventSource::getServerIP()
 
 /*****  USER EVENT SOURCE  *****/
 
+//NO TOCAR LOS DE USER, CREO QUE YA ESTAN LISTOS
+
 UserEventSource::UserEventSource()
 {
 	initTerminal();	//Inicializa la terminal por donde interactua el usuario
@@ -166,9 +168,6 @@ genericEvent * UserEventSource::insertEvent()
 	genericEvent * ret;
 	switch (evCode)
 	{
-	case NO_EV:
-		ret = (genericEvent *) new EV_NoEvent;
-		break;
 	case PUT:
 		ret = (genericEvent *) new EV_SendWRQ;
 		break;
@@ -182,7 +181,8 @@ genericEvent * UserEventSource::insertEvent()
 		ret = (genericEvent *) new EV_ClearScreen;
 		break;
 	case EMPTY_COMMAND:
-
+		ret = (genericEvent *) new EV_EmptyCommand;
+		break;
 	case INVALID:
 		ret = (genericEvent *) new EV_InvalidCommand;
 		break;
@@ -197,18 +197,21 @@ genericEvent * UserEventSource::insertEvent()
 
 /*****  TIMEOUTS EVENT SOURCE  *****/
 
+//NO TOCAR LOS DE TIMEOUT, CREO QUE YA ESTAN LISTOS
+
 bool TimeoutEventSource::isThereEvent()
 {
+	bool ret = false;
 	if (timeout)
 	{
 		evCode = TIMEOUT;
-		return true;
+		ret = true;
 	}
 	else
 	{
 		evCode = NO_EV;
-		return false;
 	}
+	return ret;
 }
 
 void TimeoutEventSource::setTimeout()
@@ -230,16 +233,17 @@ void TimeoutEventSource::stopTimer()
 genericEvent * TimeoutEventSource::insertEvent() 
 {
 	genericEvent * ret;
+	//Hago un switch solo para mantener la estructura del metodo en las otras clases
 	switch (evCode)
 	{
 	case TIMEOUT:
 		ret = (genericEvent *) new EV_Timeout;
 		break;
 	default:
-		ret = 
 		break;
 	}
 }
+
 /*****  SOFTWARE EVENT SOURCE   *****/
 
 SoftwareEventSource::SoftwareEventSource() {};
