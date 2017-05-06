@@ -47,6 +47,6 @@ genericState *ST_Idle::on_EmptyCommand(genericEvent *ev)
 {
 	genericState *ret = (genericState *) new ST_Idle();
 	EV_InvalidCommand *ECEvent = (EV_InvalidCommand *)ev;
-	ECEvent->terminal->newLine();
+	ECEvent->terminal->setCommandLine();
 	return ret;
 }
