@@ -50,5 +50,3 @@ genericState *ST_Idle::on_EmptyCommand(genericEvent *ev)
 	ECEvent->terminal->newLine();
 	return ret;
 }
-
-genericState *ST_Idle::on_Quit(genericEvent *ev);
