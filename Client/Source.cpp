@@ -24,10 +24,10 @@ int main(int argc, char *argv[])
 	userData_t userData;
 	Screen Terminal;
 	UserEventSource userSource(&Terminal);
-	usefulInfo I(userData.serverAddress, &userSource);	//Se crea la instancia de usefulInfo
-	eventGenerator eg(&I);	//creo la instancia del generador de eventos
+	usefulInfo Info(userData.serverAddress, &userSource);	//Se crea la instancia de usefulInfo
+	eventGenerator evGen(&Info);	//creo la instancia del generador de eventos
 	genericEvent *ev;
-	genericFSM fsm;
+	genericFSM FSM;
 
 	unsigned int connectAttempt = 0;
 	do
@@ -47,16 +47,17 @@ int main(int argc, char *argv[])
 
 		do //Si hay conexion, entro en la FSM
 		{
-			eg.generateEvent();
-			ev = eg.getNextEvent();
+			evGen.generateEvent();
+			ev = evGen.getNextEvent();
 
 			if (ev != nullptr)
 			{
-				fsm.dispatch(ev);
+				FSM.dispatch(ev);
 			}
-		} while (fsm.getCurrentState()->getLastEvent() != QUIT || fsm.getCurrentState()->getLastEvent() != CONNECTION_FAIL);
 
-	} while (fsm.getCurrentState()->getLastEvent() != QUIT);
+		} while (FSM.getCurrentState()->getLastEvent() != QUIT);
+
+	} while (FSM.getCurrentState()->getLastEvent() != QUIT);
 	
 }
 
