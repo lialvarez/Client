@@ -29,6 +29,7 @@ public:
 	virtual genericState* on_FileError(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_LastData(genericEvent* ev) { return nullptr; }//ES VALIDO TANTO PARA SEND COMO RECEIVE??
 	virtual genericState* on_EmptyCommand(genericEvent *ev) { return nullptr; }
+	virtual genericState* on_Quit(genericEvent *ev) { return nullptr; }
 
 	void setLastEvent(eventCode lastEvent) { this->lastEvent = lastEvent; }   //setter
 	eventCode getLastEvent() { return lastEvent; }    //getter

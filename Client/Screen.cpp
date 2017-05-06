@@ -65,6 +65,7 @@ void Screen::fileErrorMsg(std::string fileName)
 {
 	move(terminalWindow->_cury + 1, 0);
 	printw("No se pudo encontrar el archivo '"); printw(fileName.c_str()); printw("'");
+	move(terminalWindow->_cury + 1, 0);
 	setCommandLine();
 }
 
@@ -99,6 +100,7 @@ void Screen::outputInvalid(std::string command)
 	printw("Comando '"); printw(command.c_str()); printw("' no encontrado");
 	move(terminalWindow->_cury + 1, 0);
 	printw("Para ver la pagina de ayuda ingrese HELP");
+	move(terminalWindow->_cury + 1, 0);
 	refresh();
 	newLine();
 }

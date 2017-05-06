@@ -241,8 +241,11 @@ void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/)
 }
 
 void TimeoutEventSource::startTimer()
-{
+
+{	//Esta funcion no me estaria funcionando:
+
 	//timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
+
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 }
 

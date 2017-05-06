@@ -16,6 +16,7 @@ public:
 	genericState* on_HelpRequest(genericEvent *ev);
 	genericState* on_ClearTerminal(genericEvent *ev);
 	genericState* on_EmptyCommand(genericEvent *ev);
+	genericState* on_Quit(genericEvent *ev);
 
 };
 
