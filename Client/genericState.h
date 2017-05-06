@@ -31,7 +31,7 @@ public:
 	virtual genericState* on_EmptyCommand(genericEvent *ev) { return nullptr; }
 
 	void setLastEvent(eventCode lastEvent) { this->lastEvent = lastEvent; }   //setter
-	eventCode getLastEvent() { return lastEvent; }    //getter
+	eventCode getLastEvent() { return lastEvent; }    //getter de last event
 
 protected:
 	eventCode lastEvent;
