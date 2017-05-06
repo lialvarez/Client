@@ -24,9 +24,15 @@ std::string NetworkEventSource::getServerIP()
 
 //NO TOCAR LOS DE USER, CREO QUE YA ESTAN LISTOS
 
-UserEventSource::UserEventSource()
+UserEventSource::UserEventSource(Screen *terminal)
 {
-	initTerminal();	//Inicializa la terminal por donde interactua el usuario
+	this->terminal = terminal;
+	this->terminal->initTerminal();	//Inicializa la terminal por donde interactua el usuario
+}
+
+std::string UserEventSource::getCommand()
+{
+	return command;
 }
 
 std::string UserEventSource::getFileToTransfer()
@@ -57,9 +63,9 @@ bool UserEventSource::isThereEvent()
 			buffer.pop_back();
 			delch();
 		}
-		if (terminalWindow->_curx == 6)	//Posicion donde arranca la linea de comando
+		if (terminal->terminalWindow->_curx == 6)	//Posicion donde arranca la linea de comando
 		{
-			terminalWindow->_curx++;	//Para que el cursor no pse vaya del area permitida
+			terminal->terminalWindow->_curx++;	//Para que el cursor no pse vaya del area permitida
 		}
 		ret = false;	//No hay evento
 		break;
@@ -70,7 +76,7 @@ bool UserEventSource::isThereEvent()
 		std::transform(command.begin(), command.end(), command.begin(), tolower);	//
 		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
 
-		if (words.size() == 0)
+		if (words[0].size() == 0)
 		{
 			evCode = EMPTY_COMMAND;
 			ret = true;
@@ -100,6 +106,7 @@ bool UserEventSource::isThereEvent()
 		}
 		else if (words.size() == 2)
 		{
+			fileToTransfer = words[1];
 			auxFile.open(words[1].c_str());
 			if (strcmp(words[0].c_str(), "put") == 0)
 			{
@@ -112,7 +119,6 @@ bool UserEventSource::isThereEvent()
 				else
 				{
 					auxFile.close();
-					fileToTransfer = words[1];
 					evCode = PUT;
 					ret = true;
 
@@ -129,7 +135,6 @@ bool UserEventSource::isThereEvent()
 				else
 				{
 					auxFile.close();
-					fileToTransfer = words[1];
 					evCode = GET;
 					ret = true;
 				}
@@ -166,28 +171,44 @@ bool UserEventSource::isThereEvent()
 genericEvent * UserEventSource::insertEvent()
 {
 	genericEvent * ret;
+
+	EV_Put *castedEvP;
+	EV_Get *castedEvG;
+	EV_InvalidCommand * castedEvIC;
+	EV_FileError *castedEvFE;
 	switch (evCode)
 	{
 	case PUT:
-		ret = (genericEvent *) new EV_SendWRQ;
+		ret = (genericEvent *) new EV_Put(terminal);
+		castedEvP = (EV_Put *)ret;
+		castedEvP->setSelectedFile(command);
 		break;
 	case GET:
-		ret = (genericEvent *) new EV_SendRRQ;
+		ret = (genericEvent *) new EV_Get(terminal);
+		castedEvG = (EV_Get *)ret;
+		castedEvG->setSelectedFile(command);
 		break;
 	case HELP:
-		ret = (genericEvent *) new EV_HelpRequest;
+		ret = (genericEvent *) new EV_Help(terminal);
 		break;
 	case CLEAR:
-		ret = (genericEvent *) new EV_ClearScreen;
+		ret = (genericEvent *) new EV_Clear(terminal);
 		break;
 	case EMPTY_COMMAND:
-		ret = (genericEvent *) new EV_EmptyCommand;
+		ret = (genericEvent *) new EV_EmptyCommand(terminal);
 		break;
 	case INVALID:
-		ret = (genericEvent *) new EV_InvalidCommand;
+		ret = (genericEvent *) new EV_InvalidCommand(terminal);
+		castedEvIC = (EV_InvalidCommand *)ret;
+		castedEvIC->setInvalidCommand(command);
 		break;
 	case FILE_ERROR:
-		ret = (genericEvent *) new EV_FileError;
+		ret = (genericEvent *) new EV_FileError(terminal);
+		castedEvFE = (EV_FileError *)ret;
+		castedEvFE->setFileNotFound(fileToTransfer);
+		break;
+	case QUIT:
+		ret = (genericEvent *) new EV_Quit;
 		break;
 	default:
 		break;
@@ -214,14 +235,17 @@ bool TimeoutEventSource::isThereEvent()
 	return ret;
 }
 
-void TimeoutEventSource::setTimeout()
+void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/)
 {
 	timeout = true;	//Set timeout modifica una variable de control que indica si ocurrio un timeout
 }
 
 void TimeoutEventSource::startTimer()
-{
-	timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
+
+{	//Esta funcion no me estaria funcionando:
+
+	//timer.async_wait(&setTimeout);	//Cuando transcurra el tiempo seteado, se llamara al metodo "setTimeout"
+
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 }
 
@@ -242,6 +266,7 @@ genericEvent * TimeoutEventSource::insertEvent()
 	default:
 		break;
 	}
+	return ret;
 }
 
 /*****  SOFTWARE EVENT SOURCE   *****/

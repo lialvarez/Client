@@ -2,10 +2,13 @@
 #include "usefulInfo.h"
 #include "eventGenerator.h"
 #include "genericFSM.h"
+#include "eventSources.h"
+#include "Screen.h"
 #include <string>
 
 #define CALLBACK_ERROR	 0
 #define CALLBACK_OK		 1
+#define MAX_ATTEMPT
 
 int inputCallback(char *key, char *value, void * userData);
 
@@ -19,23 +22,43 @@ typedef struct
 int main(int argc, char *argv[])
 {
 	userData_t userData;
-
-	usefulInfo I(userData.serverAddress);	//Se crea la instancia de usefulInfo
-	eventGenerator eg(&I);	//creo la instancia del generador de eventos
+	Screen Terminal;
+	UserEventSource userSource(&Terminal);
+	usefulInfo Info(userData.serverAddress, &userSource);	//Se crea la instancia de usefulInfo
+	eventGenerator evGen(&Info);	//creo la instancia del generador de eventos
 	genericEvent *ev;
-	genericFSM fsm;
+	genericFSM FSM;
 
+	unsigned int connectAttempt = 0;
 	do
 	{
-		eg.generateEvent();
-		ev = eg.getNextEvent();
+		//do
+		//{
+		//	//conectar()
+		//	//Seguramente va a haber que manejar una excepcion si no logra conecatarse
+		//	connectAttempt++;
+		//} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
+		//connectAttempt = 0;	//Reseteo el connect attempt
+		//
+		//if (/*connection failed*/)	//Si no hay conexion salgo del programa
+		//{
+		//	//Salir del programa, no se pudo establecer conexion
+		//}
 
-		if (ev != nullptr)
+		do //Si hay conexion, entro en la FSM
 		{
-			fsm.dispatch(ev);
-		}
-	} while (fsm.getCurrentState()->getLastEvent() != QUIT);
+			evGen.generateEvent();
+			ev = evGen.getNextEvent();
 
+			if (ev != nullptr)
+			{
+				FSM.dispatch(ev);
+			}
+
+		} while (FSM.getCurrentState()->getLastEvent() != QUIT);
+
+	} while (FSM.getCurrentState()->getLastEvent() != QUIT);
+	
 }
 
 int inputCallback(char *key, char *value, void * userData)

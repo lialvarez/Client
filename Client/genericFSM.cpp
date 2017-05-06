@@ -11,51 +11,67 @@ genericFSM::~genericFSM()
 	delete currentState;
 }
 
+genericState * genericFSM::getCurrentState()
+{
+	return currentState;
+}
+
 void genericFSM::dispatch(genericEvent *ev)
 {
 	genericState *newState = nullptr;
 	{
-
-		switch (ev->getEventType())
+		switch (ev->getEventType())	
 		{
+		case NO_EV:
+			newState = currentState->on_NoEv(ev);
+			break;
 		case PUT:
-			newState = currentState->on_SendWRQ(ev);
+			newState = currentState->on_Put(ev);
 			break;
 		case GET:
-			newState = currentState->on_SendRRQ(ev);
-			break;
-		case HELP:
-			newState = currentState->on_HelpRequest(ev);
-			break;
-		case CLEAR:
-			newState = currentState->on_ClearTerminal(ev);
+			newState = currentState->on_Get(ev);
 			break;
 		case QUIT:
-			newState = currentState->on_CloseClient(ev);
+			newState = currentState->on_Quit(ev);
+			break;
+		case HELP:
+			newState = currentState->on_Help(ev);
+			break;
+		case CLEAR:
+			newState = currentState->on_Clear(ev);
 			break;
 		case INVALID:
 			newState = currentState->on_InvalidCommand(ev);
+			break;
+		case EMPTY_COMMAND:
+			newState = currentState->on_EmptyCommand(ev);
 			break;
 		case FILE_ERROR:
 			newState = currentState->on_FileError(ev);
 			break;
 		case DATA:
-			newState = currentState->on_ReceiveData(ev);
+			newState = currentState->on_Data(ev);
+			break;
+		case ACK:
+			newState = currentState->on_Ack(ev);
+			break;
+		case WRQ:
+			newState = currentState->on_WRQ(ev);
+			break;	
+		case RRQ:
+			newState = currentState->on_RRQ(ev);
+			break;
+		case ERROR:
+			newState = currentState->on_Error(ev);
 			break;
 		case LAST_DATA:
 			newState = currentState->on_LastData(ev);
 			break;
-		case ACK:
-			newState = currentState->on_ReceiveAck(ev);
-			break;
 		case TIMEOUT:
-			newState = currentState->on_timeout(ev);
+			newState = currentState->on_Timeout(ev);
 			break;
-		case RECEIVE_ERROR:
-			newState = currentState->on_ReceiveError(ev);
-			break;
-		case SEND_ERROR:
-			newState = currentState->on_SendError(ev);
+		case CONNECTION_FAIL:
+			newState = currentState->on_ConnectionFailed(ev);
 			break;
 		default:
 			break;

@@ -6,7 +6,9 @@
 class usefulInfo
 {
 public:
-	usefulInfo(std::string serverAddres) { this->serverAddress = serverAddres; }
+	//Hay que agrgarle los punteros a las otras fuentes al constructor
+	//y pasar el constructor a un .cpp
+	usefulInfo(std::string serverAddres, UserEventSource *UsEvSrc) { this->serverAddress = serverAddres; user = UsEvSrc; }
 
 	NetworkEventSource* network;	//TODO: ponerle getters quizas? quedaria mas prolijo o es al pedo??
 	UserEventSource* user;

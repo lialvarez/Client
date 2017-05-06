@@ -2,6 +2,7 @@
 #define SCREEN_H
 
 #include "curses.h"
+#include <string>
 
 #define ENTER			10
 #define BACKSPACE		8 
@@ -10,12 +11,22 @@
 
 #define HELP_FILE		"resources/Help.txt"
 
-void initTerminal();
-void outputHelp();
-void setCommandLine();
-void resetTerminal();
-void fileErrorMsg(std::string fileName);
+class Screen
+{
+public:
+	Screen();
+	
+	void initTerminal();
+	void newLine();
+	void outputHelp();
+	void outputInvalid(std::string command);
+	void setCommandLine();
+	void resetTerminal();
+	void fileErrorMsg(std::string fileName);
 
-WINDOW * terminalWindow;
+	WINDOW * terminalWindow;
+private:
+	
 
+};
 #endif // !SCREEN_H

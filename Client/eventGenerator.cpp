@@ -1,42 +1,40 @@
 #include "eventGenerator.h"
 
-eventGenerator::eventGenerator(usefulInfo* _I)
+eventGenerator::eventGenerator(usefulInfo* _I):buffer(16)
 {
 	I = _I;
 }
-eventGenerator::~eventGenerator() {};
+
 void eventGenerator::generateEvent()
 {
-	//Buffer FILO
+
+	//if (I->software->isThereEvent())
+	//{
+	//	buffer.push_back(I->software->insertEvent());
+	//}
+
+	//if (I->network->isThereEvent())
+	//{
+	//	buffer.push_back(I->network->insertEvent());
+	//}
+
+	//if (I->timeout->isThereEvent())
+	//{
+	//	buffer.push_back(I->timeout->insertEvent());
+	//}
 
 	if (I->user->isThereEvent())
 	{
 		buffer.push_back(I->user->insertEvent());
-	}
-
-	if (I->timeout->isThereEvent())
-	{
-		buffer.push_back(I->timeout->insertEvent());
-	}
-
-	if (I->network->isThereEvent())
-	{
-		buffer.push_back(I->network->insertEvent());
-	}
-
-	if (I->software->isThereEvent())
-	{
-		buffer.push_back(I->software->insertEvent());
-	}
-		
+	}		
 }
 genericEvent * eventGenerator::getNextEvent()
 {
 	genericEvent * ret;
 	if (buffer.size() != 0)
 	{
-		ret = buffer.back();	//carga en ret el ultimo elemento del buffer
-		buffer.pop_back();	//elimina el ultimo elemento del buffer
+		ret = buffer.front();	//carga en ret el primer elemento del buffer
+		buffer.pop_front();	//elimina el ultimo elemento del buffer
 	}
 	else
 	{

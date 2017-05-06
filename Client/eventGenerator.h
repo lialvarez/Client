@@ -1,22 +1,23 @@
 #ifndef EVENTGENERATOR_H
 #define EVENTGENERATOR_H
 
+
 #include "usefulInfo.h"
 #include "eventSources.h"
 #include "genericEvent.h"
 #include <vector>
+#include <boost\circular_buffer.hpp>
 
 class eventGenerator
 {
 public:
 	eventGenerator(usefulInfo* _I);
-	~eventGenerator();
 	void generateEvent();
 	genericEvent* getNextEvent();
 
 protected:
 
-	std::vector<genericEvent *> buffer;
+	boost::circular_buffer<genericEvent *> buffer;
 	usefulInfo* I;
 };
 
