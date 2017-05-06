@@ -2,6 +2,8 @@
 #include "usefulInfo.h"
 #include "eventGenerator.h"
 #include "genericFSM.h"
+#include "eventSources.h"
+#include "Screen.h"
 #include <string>
 
 #define CALLBACK_ERROR	 0
@@ -20,8 +22,9 @@ typedef struct
 int main(int argc, char *argv[])
 {
 	userData_t userData;
-
-	usefulInfo I(userData.serverAddress);	//Se crea la instancia de usefulInfo
+	Screen Terminal;
+	UserEventSource userSource(&Terminal);
+	usefulInfo I(userData.serverAddress, &userSource);	//Se crea la instancia de usefulInfo
 	eventGenerator eg(&I);	//creo la instancia del generador de eventos
 	genericEvent *ev;
 	genericFSM fsm;
@@ -29,20 +32,20 @@ int main(int argc, char *argv[])
 	unsigned int connectAttempt = 0;
 	do
 	{
-		do
-		{
-			//conectar()
-			//Seguramente va a haber que manejar una excepcion si no logra conecatarse
-			connectAttempt++;
-		} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
-		connectAttempt = 0;	//Reseteo el connect attempt
-		
-		if (/*connection failed*/)	//Si no hay conexion salgo del programa
-		{
-			//Salir del programa, no se pudo establecer conexion
-		}
+		//do
+		//{
+		//	//conectar()
+		//	//Seguramente va a haber que manejar una excepcion si no logra conecatarse
+		//	connectAttempt++;
+		//} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
+		//connectAttempt = 0;	//Reseteo el connect attempt
+		//
+		//if (/*connection failed*/)	//Si no hay conexion salgo del programa
+		//{
+		//	//Salir del programa, no se pudo establecer conexion
+		//}
 
-		else do //Si hay conexion, entro en la FSM
+		do //Si hay conexion, entro en la FSM
 		{
 			eg.generateEvent();
 			ev = eg.getNextEvent();

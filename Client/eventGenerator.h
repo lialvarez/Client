@@ -12,7 +12,6 @@ class eventGenerator
 {
 public:
 	eventGenerator(usefulInfo* _I);
-	~eventGenerator();
 	void generateEvent();
 	genericEvent* getNextEvent();
 

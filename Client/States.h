@@ -6,15 +6,16 @@
 class ST_Idle:public genericState
 {
 public:
-	genericState* on_SendWRQ(genericEvent *ev);
-	genericState* on_SendRRQ(genericEvent *ev);
-	genericState* on_InvalidCommand(genericEvent *ev);
-	genericState* on_SendError(genericEvent *ev);
+	//genericState* on_Get(genericEvent *ev);
+	//genericState* on_Put(genericEvent *ev);
+	//genericState* on_SendError(genericEvent *ev);
+	//genericState* on_ReceiveError(genericEvent *ev);
 	genericState* on_FileError(genericEvent *ev);
-	genericState* on_ReceiveError(genericEvent *ev);
+	genericState* on_InvalidCommand(genericEvent *ev);
 	genericState* on_CloseClient(genericEvent* ev);
 	genericState* on_HelpRequest(genericEvent *ev);
 	genericState* on_ClearTerminal(genericEvent *ev);
+	genericState* on_EmptyCommand(genericEvent *ev);
 
 };
 

@@ -3,15 +3,17 @@
 
 #include "genericEvent.h"
 
-typedef char BYTE;
+typedef char _BYTE;
 
 //USER EVENTS
 
 class EV_Put :public genericEvent
 {
 public:
-	EV_Put() { ev = PUT; };
-
+	EV_Put(Screen *terminal) { ev = PUT; this->terminal = terminal; };
+	Screen *terminal;
+	std::string getSelectedFile() { return fileToTransfer; }	//getter del nombre del archivo
+	void setSelectedFile(std::string selectedFile) { fileToTransfer = selectedFile; }	//setter del nombre del archivo
 private:
 	std::string fileToTransfer;
 };
@@ -19,7 +21,10 @@ private:
 class EV_Get : public genericEvent
 {
 public:
-	EV_Get() { ev = GET; };
+	EV_Get(Screen *terminal) { ev = GET; };
+	Screen *terminal;
+	std::string getSelectedFile() { return fileToTransfer; }	//getter del nombre del archivo
+	void setSelectedFile(std::string selectedFile) { fileToTransfer = selectedFile; }	//setter del nombre del archivo
 private:
 	std::string fileToTransfer;
 };
@@ -35,7 +40,8 @@ private:
 class EV_Help : public genericEvent
 {
 public:
-	EV_Help() { ev = HELP; };
+	EV_Help(Screen *terminal) { ev = HELP; this->terminal = terminal; };
+	Screen *terminal;
 private:
 
 };
@@ -43,19 +49,41 @@ private:
 class EV_Clear : public genericEvent
 {
 public:
-	EV_Clear() { ev = CLEAR; };
+	EV_Clear(Screen *terminal) { ev = CLEAR; this->terminal = terminal; };
+	Screen *terminal;
 private:
 
+};
+
+class EV_EmptyCommand : public genericEvent
+{
+public:
+	EV_EmptyCommand(Screen *terminal) { ev = EMPTY_COMMAND; this->terminal = terminal; }
+	Screen *terminal;
+private:
+
+};
+
+class EV_FileError : public genericEvent
+{
+public:
+	EV_FileError(Screen *terminal) { ev = FILE_ERROR; this->terminal = terminal; };
+	Screen *terminal;
+	std::string getFileNotFound() { return fileNotFound; }
+	void setFileNotFound(std::string fileNotFound) { this->fileNotFound = fileNotFound; }
+private:
+	std::string fileNotFound;
 };
 
 class EV_InvalidCommand : public genericEvent
 {
 public:
-	EV_InvalidCommand() { ev = INVALID; };
-	~EV_InvalidCommand();
-
+	EV_InvalidCommand(Screen *terminal) { ev = INVALID; this->terminal = terminal; };
+	Screen *terminal;
+	std::string getInvalidCommand() { return invalidCommand; };
+	void setInvalidCommand(std::string invalidCommand) { this->invalidCommand = invalidCommand; }
 private:
-
+	std::string invalidCommand;
 };
 
 //NETWORK EVENTS
@@ -67,7 +95,7 @@ public:
 	//TODO: funciones de cargar el buffer y de obetener la info
 
 private:
-	BYTE* dataBuffer;
+	_BYTE* dataBuffer;
 };
 
 class EV_Ack : public genericEvent
@@ -82,7 +110,7 @@ private:
 class EV_Error : public genericEvent
 {
 public:
-	EV_Error() { ev = ERROR; };
+	EV_Error() { ev = _ERROR; };
 
 private:
 
@@ -112,27 +140,18 @@ private:
 class EV_ConnectionFailed : public genericEvent
 {
 public:
-	EV_ConnectionFailed();
+	EV_ConnectionFailed() { ev = CONNECTION_FAIL; };
 
 private:
 
 };
 
-class EV_FileError : public genericEvent
-{
-public:
-	EV_FileError() { ev = FILE_ERROR; };
-	~EV_FileError();
 
-private:
-
-};
 
 class EV_LastData : public genericEvent
 {
 public:
 	EV_LastData() { ev = LAST_DATA; };
-	~EV_LastData();
 
 private:
 
@@ -144,7 +163,6 @@ class EV_Timeout : public genericEvent
 {
 public:
 	EV_Timeout() { ev = TIMEOUT; };
-	~EV_Timeout();
 
 private:
 

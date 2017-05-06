@@ -59,13 +59,7 @@
     <ClCompile Include="eventGenerator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Events.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="eventSources.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="genericEvent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="genericFSM.cpp">

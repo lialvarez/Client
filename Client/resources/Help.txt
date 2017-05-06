@@ -1,5 +1,3 @@
-Client.exe HELP:
-
 1. Comando PUT:
 Envia un WRQ al servidor del archivo indicado.
 Uso: Client>PUT <nombre del archivo>

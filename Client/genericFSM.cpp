@@ -11,6 +11,11 @@ genericFSM::~genericFSM()
 	delete currentState;
 }
 
+genericState * genericFSM::getCurrentState()
+{
+	return currentState;
+}
+
 void genericFSM::dispatch(genericEvent *ev)
 {
 	genericState *newState = nullptr;
@@ -35,6 +40,9 @@ void genericFSM::dispatch(genericEvent *ev)
 			break;
 		case INVALID:
 			newState = currentState->on_InvalidCommand(ev);
+			break;
+		case EMPTY_COMMAND:
+			newState = currentState->on_EmptyCommand(ev);
 			break;
 		case FILE_ERROR:
 			newState = currentState->on_FileError(ev);

@@ -9,20 +9,20 @@ void eventGenerator::generateEvent()
 {
 	//Buffer FILO
 
-	if (I->software->isThereEvent())
-	{
-		buffer.push_back(I->software->insertEvent());
-	}
+	//if (I->software->isThereEvent())
+	//{
+	//	buffer.push_back(I->software->insertEvent());
+	//}
 
-	if (I->network->isThereEvent())
-	{
-		buffer.push_back(I->network->insertEvent());
-	}
+	//if (I->network->isThereEvent())
+	//{
+	//	buffer.push_back(I->network->insertEvent());
+	//}
 
-	if (I->timeout->isThereEvent())
-	{
-		buffer.push_back(I->timeout->insertEvent());
-	}
+	//if (I->timeout->isThereEvent())
+	//{
+	//	buffer.push_back(I->timeout->insertEvent());
+	//}
 
 	if (I->user->isThereEvent())
 	{

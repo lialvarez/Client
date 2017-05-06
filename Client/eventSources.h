@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <boost\asio.hpp>
+#include "Screen.h"
 #include "genericEventSource.h"
 
 
@@ -23,15 +24,15 @@ private:
 class UserEventSource : public genericEventSource
 {
 public:
-
-	UserEventSource();
+	UserEventSource(Screen *Terminal);
 	bool isThereEvent();
-	std::string getFileToTransfer();
 	genericEvent* insertEvent();
+	std::string getFileToTransfer();	//getter del nombre del archivo a transferir
+	std::string getCommand();	//getter del commando ingresado
+	Screen *terminal;
 private:
 
 	std::string fileToTransfer;
-
 	std::vector<std::string> words;	//Vector para separar los argumentos ingresados
 	std::vector<char> buffer;
 	std::string command;
@@ -54,7 +55,7 @@ private:
 	boost::asio::io_service io;	
 	boost::asio::deadline_timer timer;
 	bool timeout;
-	void setTimeout();
+	void setTimeout(const boost::system::error_code& /*e*/);
 };
 
 class SoftwareEventSource : public genericEventSource
