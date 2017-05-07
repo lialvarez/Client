@@ -5,6 +5,24 @@
 #include <sstream>
 
 //ST_Idle
+
+genericState *ST_Idle::on_Put(genericEvent *ev)
+{
+	EV_Put * PEv = (EV_Put *)ev;
+	//SendWRQ(PEv->getSelectedFile())	//Funcion que envia el WRQ con el nombre del archivo
+	genericState *ret = (genericState *) new (ST_ReceiveFirstAck);
+	return ret;
+}
+
+genericState *ST_Idle::on_Get(genericEvent *ev)
+{
+	EV_Get * GEv = (EV_Get *)ev;
+	//sendRRQ(GEv->getSelectedFile());	//Funcion que envia el RRQ con el nombre del archivo
+	genericState *ret = (genericState *) new (ST_ReceiveFirstData);
+	return ret;
+}
+
+
 genericState *ST_Idle::on_HelpRequest(genericEvent *ev)
 {
 	EV_Help * HEvent = (EV_Help *)ev;	//Rutina de accion que muestra instrucciones en pantalla
