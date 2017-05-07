@@ -29,9 +29,12 @@ public:
 
 	void setLastEvent(eventCode lastEvent) { this->lastEvent = lastEvent; }   //setter
 	eventCode getLastEvent() { return lastEvent; }    //getter de last event
+	std::string getSelectedFile() { return fileToTransfer; }
+	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }
 
 protected:
 	eventCode lastEvent;
+	std::string fileToTransfer;
 };
 
 #endif // !GENERICSTATE_H

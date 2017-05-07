@@ -11,6 +11,8 @@ genericState *ST_Idle::on_Put(genericEvent *ev)
 	EV_Put * PEv = (EV_Put *)ev;
 	//SendWRQ(PEv->getSelectedFile())	//Funcion que envia el WRQ con el nombre del archivo
 	genericState *ret = (genericState *) new (ST_ReceiveFirstAck);
+	ret->setFileToTransfer(PEv->getSelectedFile());	//Le indica al estado ST_receiveFirstAck cual es el archivo que se envio. En caso de recibir
+													//timeout se utilizara esta info para reenviar el WRQ del archivo correspondiente.
 	return ret;
 }
 
@@ -85,13 +87,14 @@ genericState * ST_ReceiveFirstAck::on_Error(genericEvent * ev)
 
 genericState * ST_ReceiveFirstAck::on_Timeout(genericEvent * ev)
 {
-	//sendWRQ();	//TODO
+	//sendWRQ(fileToTransfer);	//TODO
 	return nullptr;
 }
 
 genericState * ST_ReceiveFirstAck::on_ConnectionFailed(genericEvent * ev)
 {
 	//y aca qe verga hacemo? //TODO
+	//yo diria que deberiamos salir a reintentar conectar
 	return nullptr;
 }
 

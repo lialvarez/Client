@@ -9,9 +9,10 @@ public:
 
 	genericState* on_Get(genericEvent *ev);
 	genericState* on_Put(genericEvent *ev);
+	
 	//Chequear estos dos:
-	genericState* on_SendError(genericEvent *ev);
-	genericState* on_ReceiveError(genericEvent *ev);
+	//genericState* on_SendError(genericEvent *ev);
+	//genericState* on_ReceiveError(genericEvent *ev);
 
 	genericState* on_FileError(genericEvent *ev);
 	genericState* on_InvalidCommand(genericEvent *ev);
@@ -31,7 +32,10 @@ public:
 	genericState* on_Timeout(genericEvent* ev);
 	genericState* on_ConnectionFailed(genericEvent* ev);
 
+	std::string getSelectedFile() { return fileToTransfer; }
+	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }
 private:
+	std::string fileToTransfer;
 };
 
 class ST_ReceiveAck : public genericState

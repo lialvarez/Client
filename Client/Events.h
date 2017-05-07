@@ -91,7 +91,7 @@ private:
 class EV_Data : public genericEvent
 {
 public:
-	EV_Data(Screen *terminal) { ev = DATA; };
+	EV_Data() { ev = DATA; };
 	//TODO: funciones de cargar el buffer y de obetener la info
 
 private:
