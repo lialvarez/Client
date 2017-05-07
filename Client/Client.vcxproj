@@ -166,7 +166,6 @@
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Source.cpp" />
     <ClCompile Include="States.cpp" />
-    <ClCompile Include="ST_Idle.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

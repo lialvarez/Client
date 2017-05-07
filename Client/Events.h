@@ -91,10 +91,11 @@ private:
 class EV_Data : public genericEvent
 {
 public:
-	EV_Data() { ev = DATA; };
+	EV_Data(Screen *terminal) { ev = DATA; };
 	//TODO: funciones de cargar el buffer y de obetener la info
 
 private:
+	unsigned int blockNumber;	//Guardar el numero de bloque aca.
 	_BYTE* dataBuffer;
 };
 
