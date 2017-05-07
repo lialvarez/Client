@@ -38,7 +38,7 @@ void genericFSM::dispatch(genericEvent *ev)
 			newState = currentState->on_Help(ev);
 			break;
 		case CLEAR:
-			newState = currentState->on_Clear(ev);
+			newState = currentState->on_ClearTerminal(ev);
 			break;
 		case INVALID:
 			newState = currentState->on_InvalidCommand(ev);

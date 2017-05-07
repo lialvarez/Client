@@ -13,7 +13,7 @@ public:
 	virtual genericState* on_Get(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_Quit(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_Help(genericEvent* ev) { return nullptr; }
-	virtual genericState* on_Clear(genericEvent* ev) { return nullptr; }
+	virtual genericState* on_ClearTerminal(genericEvent *ev) { return nullptr; }
 	virtual genericState* on_EmptyCommand(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_FileError(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_InvalidCommand(genericEvent* ev) { return nullptr; }
