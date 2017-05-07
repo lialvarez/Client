@@ -6,9 +6,9 @@
 #include "Screen.h"
 #include <string>
 
-#define CALLBACK_ERROR	 0
-#define CALLBACK_OK		 1
-#define MAX_ATTEMPT
+#define CALLBACK_ERROR	0
+#define CALLBACK_OK		1
+#define MAX_ATTEMPT		5
 
 int inputCallback(char *key, char *value, void * userData);
 

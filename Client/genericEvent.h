@@ -3,7 +3,8 @@
 
 #include <string>
 
-typedef enum { NO_EV, PUT, GET, QUIT, HELP, CLEAR, EMPTY_COMMAND, INVALID, FILE_ERROR, ERROR, DATA, ACK, WRQ, RRQ, LAST_DATA, TIMEOUT, CONNECTION_FAIL } eventCode;
+typedef enum { NO_EV, PUT, GET, QUIT, HELP, CLEAR, EMPTY_COMMAND, INVALID, FILE_ERROR, ERRO, DATA, ACK, WRQ, RRQ, LAST_DATA, TIMEOUT, CONNECTION_FAIL } eventCode;
+//Atencion que el evento ERROR es ERRO porque ERROR ya esta definido
 
 class genericEvent
 {

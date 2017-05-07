@@ -111,7 +111,7 @@ private:
 class EV_Error : public genericEvent
 {
 public:
-	EV_Error() { ev = ERROR; };
+	EV_Error() { ev = ERRO; };
 
 private:
 

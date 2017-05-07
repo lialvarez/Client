@@ -61,7 +61,7 @@ void genericFSM::dispatch(genericEvent *ev)
 		case RRQ:
 			newState = currentState->on_RRQ(ev);
 			break;
-		case ERROR:
+		case ERRO:
 			newState = currentState->on_Error(ev);
 			break;
 		case LAST_DATA:
