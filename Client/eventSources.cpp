@@ -248,7 +248,7 @@ void TimeoutEventSource::startTimer()
 
 	/*boost::asio::deadline_timer timer(ioForTimer, boost::posix_time::seconds(60)); */
 
-	timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));
+	/*timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));*/
 }
 
 void TimeoutEventSource::stopTimer()

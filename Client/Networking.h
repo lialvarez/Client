@@ -13,12 +13,17 @@ public:
 	Networking(std::string _serverAddres):serverAddress(_serverAddres){}
 	void sendWRQ(std::string fileToTransfer);
 	void sendRRQ(std::string fileToTransfer);
-	void Networking::sendDATA(FILE *filePointer, unsigned int blockNumber);
+	void sendData(FILE *filePointer, unsigned int blockNumber);
+	void sendAck(unsigned int blockNumber = 0);
+	void sendError(std::string errorMsg, unsigned int errorCode);
+
 private:
 	void packageSET(opCodes opCode, unsigned int blockNumber = 0, FILE *filePointer = NULL);
 	void sendPackage();
 	std::string serverAddress;
 	std::string fileToTransfer;
+	std::string errorMsg;
+	unsigned int errorCode;
 	_BYTE *package;
 };
 #endif // !NETWORKING_H
