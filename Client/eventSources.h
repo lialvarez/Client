@@ -8,6 +8,9 @@
 #include "Screen.h"
 #include "genericEventSource.h"
 #include <boost\asio\deadline_timer.hpp>
+#include <boost/bind.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/function.hpp>
 
 
 class NetworkEventSource : public genericEventSource
@@ -47,14 +50,18 @@ class TimeoutEventSource : public genericEventSource
 {
 public:
 
-	TimeoutEventSource() :timer(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
+	TimeoutEventSource() :t(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
+	//TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
 	genericEvent* insertEvent();
+
+	boost::function<void(const boost::system::error_code&, boost::asio::deadline_timer*)> HANDLER123;
+	
 private:
 	boost::asio::io_service ioForTimer;	
-	boost::asio::deadline_timer timer;
+	boost::asio::deadline_timer t;
 	bool timeout;
 	void setTimeout(const boost::system::error_code& /*e*/);
 	void handler(const boost::system::error_code&, boost::asio::deadline_timer* t); //prototipo del handler
