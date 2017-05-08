@@ -151,26 +151,29 @@ genericState * ST_ReceiveAck::on_LastData(genericEvent * ev, usefulInfo *Info)
 genericState * ST_ReceiveLastAck::on_Ack(genericEvent * ev, usefulInfo *Info)
 {	
 	Info->closeFile();	//Como se finalizo el envio, se cierra el archivo.
-	Info->userSrc->terminal->
-	//TODO: mostrar que es ya se termino de enviar el mensaje
+	Info->userSrc->terminal->fileSendEnd(Info->userSrc->getFileToTransfer());	//Se muestra en pantalla que el envio fue exitoso
 	return (genericState*) new ST_Idle;
 }
 
 genericState * ST_ReceiveLastAck::on_Error(genericEvent * ev)
 {
-	//TODO: mostrar error
-	return (genericState*) new ST_Idle;
+	genericState *ret = (genericState*) new ST_Idle;
+	ret->setLastEvent(ERRO);
+	return ret;;
 }
 
 genericState * ST_ReceiveLastAck::on_Timeout(genericEvent * ev, usefulInfo *Info)
 {
-	//sendData()	//TODO
+	Info->networkSrc->networkInterface->reSendData();		//Esta funcion la estaba haciendo Male
+	Info->timeoutSrc->startTimer();	//Reinicia el timer
 	return nullptr;
 }
 
 genericState * ST_ReceiveLastAck::on_ConnectionFailed(genericEvent * ev)
 {
-	return nullptr;
+	genericState *ret = (genericState *) new ST_Idle();
+	ret->setLastEvent(CONNECTION_FAIL);
+	return ret;
 }
 
 //ST_ReceiveFirstData
