@@ -248,7 +248,7 @@ void TimeoutEventSource::startTimer()
 {
 	timeout = false;			//Variable de control indicando que no ocurrio un timeout.
 
-	boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(1)); 
+	//boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(60)); 
 
 	t.async_wait(boost::bind(handler,boost::asio::placeholders::error, &t));
 }
