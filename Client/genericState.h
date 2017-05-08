@@ -2,6 +2,8 @@
 #define GENERICSTATE_H
 #include "usefulInfo.h"
 #include "genericEvent.h"
+#include <boost/bind.hpp>
+#include <boost/function.hpp>
 
 class genericState
 {

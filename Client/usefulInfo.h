@@ -8,7 +8,7 @@ class usefulInfo
 public:
 	//Hay que agrgarle los punteros a las otras fuentes al constructor
 	//y pasar el constructor a un .cpp
-	usefulInfo(std::string _serverAddres, UserEventSource *UsEvSrc, TimeoutEventSource *TOEvSrc) :user(UsEvSrc), timeout(TOEvSrc), serverAddress(_serverAddres) {}
+	usefulInfo(std::string _serverAddress, UserEventSource *UsEvSrc, TimeoutEventSource *TOEvSrc) :user(UsEvSrc), timeout(TOEvSrc), serverAddress(_serverAddress) {}
 
 	NetworkEventSource* networkSrc;	//TODO: ponerle getters quizas? quedaria mas prolijo o es al pedo??
 	UserEventSource* userSrc;

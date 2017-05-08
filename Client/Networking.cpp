@@ -1,4 +1,45 @@
+
 #include "Networking.h"
+#include <conio.h>
+
+Networking::Networking(std::string _serverAddress)
+{
+	IO_handler = new boost::asio::io_service();
+	clientSocket = new boost::asio::ip::tcp::socket(*IO_handler);
+	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
+
+	packageArrived = false;
+
+	serverAddress = _serverAddress.c_str();		//_serverAddress viene del main, del teclado. Es el ip que se ingresa.
+
+	startConnection(serverAddress);
+}
+
+Networking::~Networking()
+{
+	delete IO_handler;
+	delete clientSocket;
+	delete clientResolver;
+}
+
+void Networking::startConnection(const char* _serverAddress) {
+
+	bool exit;
+
+	endpoint = clientResolver->resolve(boost::asio::ip::tcp::resolver::query(_serverAddress, CONNECTION_PORT));
+
+	do {
+		exit = true;
+		try {
+			boost::asio::connect(*clientSocket, endpoint);
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << "Waiting for server." << std::endl;
+			exit = false;
+		}
+	} while (!exit);
+}
 
 void Networking::sendWRQ(std::string fileToTransfer)
 {
@@ -81,4 +122,47 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	default:
 		break;
 	}
+}
+
+void Networking::sendPackage()
+{
+	std::cout << std::endl << "Sending package" << std::endl;
+
+	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
+		boost::bind(&Networking::callback1, this,
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred));
+
+	boost::asio::async_write(*clientSocket, boost::asio::buffer(package, 600), handler); //ver si cambiar el 600
+}
+
+void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {
+}
+
+void Networking::receivePackage()
+{
+	boost::system::error_code error;
+	_BYTE emptyBuf[600] = { NULL };
+	_BYTE buf[600] = { NULL };	//VER si cambiar o no el 600 (podria ser de 516, tamaño minimo)
+
+	std::cout << "Receiving package" << std::endl;
+
+	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
+		boost::bind(&Networking::callback2, this,
+			boost::asio::placeholders::error,
+			boost::asio::placeholders::bytes_transferred));
+
+	async_read(*clientSocket, boost::asio::buffer(buf, 600), handler);				// Si recibe algo, lo guarda en buffer.
+
+	if (strcmp(buf, emptyBuf))
+	{
+		packageArrived = false;
+	}
+	else
+	{
+		packageArrived = true;
+	}
+}
+
+void Networking::callback2(const boost::system::error_code& error, std::size_t transfered_bytes) {
 }
