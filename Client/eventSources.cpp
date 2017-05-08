@@ -7,8 +7,6 @@
 
 /*****  NETWORK EVENT SOURCE  *****/
 
-NetworkEventSource::NetworkEventSource(){};
-NetworkEventSource::~NetworkEventSource() {};
 bool NetworkEventSource::isThereEvent() { return false; } //MALE: esta es la funcion que lee lo que le envian por red
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
@@ -246,9 +244,9 @@ void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/) //VE
 
 void TimeoutEventSource::startTimer()
 {
-	timeout = false;			//Variable de control indicando que no ocurrio un timeout.
+	timeout = false;		//Variable de control indicando que no ocurrio un timeout.
 
-	//boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(60)); 
+	/*boost::asio::deadline_timer timer(ioForTimer, boost::posix_time::seconds(60)); */
 
 	timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));
 }
@@ -259,7 +257,7 @@ void TimeoutEventSource::stopTimer()
 }
 
 //////////ver
-void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* t)  //PRUEBA TIMER (le agrego 2 params para que repita)
+void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* timer)  //PRUEBA TIMER (le agrego 2 params para que repita)
 {
 	timeout = true;				//Se indica que ocurrió un timeout.
 }

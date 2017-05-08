@@ -6,6 +6,7 @@
 #include <fstream>
 #include <boost\asio.hpp>
 #include "Screen.h"
+#include "Networking.h"
 #include "genericEventSource.h"
 #include <boost\asio\deadline_timer.hpp>
 #include <boost/bind.hpp>
@@ -15,12 +16,12 @@
 class NetworkEventSource : public genericEventSource
 {
 public:
-	NetworkEventSource();
-	~NetworkEventSource();
+	NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface){}
 	bool isThereEvent();
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
 private:
+	Networking *networkInterface;
 	std::string serverIP;
 };
 
