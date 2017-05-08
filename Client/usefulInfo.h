@@ -10,10 +10,10 @@ public:
 	//y pasar el constructor a un .cpp
 	usefulInfo(std::string _serverAddres, UserEventSource *UsEvSrc, TimeoutEventSource *TOEvSrc) :user(UsEvSrc), timeout(TOEvSrc), serverAddress(_serverAddres) {}
 
-	NetworkEventSource* network;	//TODO: ponerle getters quizas? quedaria mas prolijo o es al pedo??
-	UserEventSource* user;
-	TimeoutEventSource* timeout;
-	SoftwareEventSource* software;
+	NetworkEventSource* networkSrc;	//TODO: ponerle getters quizas? quedaria mas prolijo o es al pedo??
+	UserEventSource* userSrc;
+	TimeoutEventSource* timeoutSrc;
+	SoftwareEventSource* softwareSrc;
 
 	genericEvent* eventBuffer;	//TODO: implementar un buffer posta
 

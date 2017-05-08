@@ -154,6 +154,7 @@
     <ClInclude Include="genericEventSource.h" />
     <ClInclude Include="genericFSM.h" />
     <ClInclude Include="genericState.h" />
+    <ClInclude Include="Networking.h" />
     <ClInclude Include="panel.h" />
     <ClInclude Include="parseCmdLine.h" />
     <ClInclude Include="Screen.h" />
@@ -164,6 +165,7 @@
     <ClCompile Include="eventGenerator.cpp" />
     <ClCompile Include="eventSources.cpp" />
     <ClCompile Include="genericFSM.cpp" />
+    <ClCompile Include="Networking.cpp" />
     <ClCompile Include="parseCmdLine.c" />
     <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Source.cpp" />

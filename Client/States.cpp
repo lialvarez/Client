@@ -13,7 +13,7 @@ genericState *ST_Idle::on_Put(genericEvent *ev, usefulInfo *Info)
 	genericState *ret = (genericState *) new ST_ReceiveFirstAck();
 	ret->setFileToTransfer(PEv->getSelectedFile());	//Le indica al estado ST_receiveFirstAck cual es el archivo que se envio. En caso de recibir
 													//timeout se utilizara esta info para reenviar el WRQ del archivo correspondiente.
-	Info->timeout->startTimer();	//Inicia el timer
+	Info->timeoutSrc->startTimer();	//Inicia el timer
 	return ret;
 }
 
@@ -23,7 +23,7 @@ genericState *ST_Idle::on_Get(genericEvent *ev, usefulInfo *Info)
 	//sendRRQ(GEv->getSelectedFile());	//Funcion que envia el RRQ con el nombre del archivo
 	genericState *ret = (genericState *) new ST_ReceiveFirstData;
 	ret->setFileToTransfer(GEv->getSelectedFile());	//Le indica al estado ST_ReceiveFirstAck cual es el archivo que se envio.
-	Info->timeout->startTimer();	//Inicia el timer
+	Info->timeoutSrc->startTimer();	//Inicia el timer
 	return ret;
 }
 

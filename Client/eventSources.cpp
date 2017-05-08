@@ -1,16 +1,12 @@
-
 #include "eventSources.h"
 #include "Screen.h"
 #include "Events.h"
 #include <boost\algorithm\string\classification.hpp>
 #include <boost\algorithm\string\split.hpp>
 #include <boost\date_time\posix_time\posix_time.hpp>
-#include <boost/bind.hpp>
 
 /*****  NETWORK EVENT SOURCE  *****/
 
-NetworkEventSource::NetworkEventSource(){};
-NetworkEventSource::~NetworkEventSource() {};
 bool NetworkEventSource::isThereEvent() { return false; } //MALE: esta es la funcion que lee lo que le envian por red
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
@@ -246,28 +242,13 @@ void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/) //VE
 	//timeout = true;			//Set timeout modifica una variable de control que indica si ocurrio un timeout
 }
 
-//constructor de prueba para el bind
-/*
- TimeoutEventSource::TimeoutEventSource()
-{
-	HANDLER123=(boost::bind(&TimeoutEventSource::handler, this,
-		boost::asio::placeholders::error, &t));
-}
-*/
-
 void TimeoutEventSource::startTimer()
 {
-	timeout = false;			//Variable de control indicando que no ocurrio un timeout.
+	timeout = false;		//Variable de control indicando que no ocurrio un timeout.
 
-	//boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(60)); 
+	/*boost::asio::deadline_timer timer(ioForTimer, boost::posix_time::seconds(60)); */
 
-	boost::function<void(const boost::system::error_code&, boost::asio::deadline_timer*)> HANDLER123( //le saque lo segundo
-		boost::bind(&TimeoutEventSource::handler, this,
-			boost::asio::placeholders::error, &t)); //VER
-
-	t.async_wait(boost::bind(HANDLER123,&t));
-
-	//t.async_wait(boost::bind(HANDLER123,boost::asio::placeholders::error, &t));
+	/*timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));*/
 }
 
 void TimeoutEventSource::stopTimer()
@@ -275,9 +256,8 @@ void TimeoutEventSource::stopTimer()
 	//timer.cancel();	//Se cancela el timer. No anda esto. ESTOY PROBANDO CON OTRAS
 }
 
-
 //////////ver
-void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* t)  //PRUEBA TIMER (le agrego 2 params para que repita)
+void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* timer)  //PRUEBA TIMER (le agrego 2 params para que repita)
 {
 	timeout = true;				//Se indica que ocurrió un timeout.
 }

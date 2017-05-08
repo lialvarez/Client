@@ -4,6 +4,7 @@
 #include "genericFSM.h"
 #include "eventSources.h"
 #include "Screen.h"
+#include "Networking.h"
 #include <string>
 
 #define CALLBACK_ERROR	0
@@ -23,6 +24,8 @@ int main(int argc, char *argv[])
 {
 	userData_t userData;
 	Screen Terminal;
+	Networking network;
+	NetworkEventSource(&network);
 	UserEventSource userSource(&Terminal);
 	TimeoutEventSource Timeout;
 	usefulInfo Info(userData.serverAddress, &userSource, &Timeout);	//Se crea la instancia de usefulInfo
