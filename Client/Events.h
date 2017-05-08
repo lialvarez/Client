@@ -1,9 +1,8 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
+#include "Networking.h"	//Para el tipo de dato _BYTE
 #include "genericEvent.h"
-
-typedef char _BYTE;
 
 //USER EVENTS
 
