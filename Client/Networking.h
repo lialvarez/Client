@@ -12,6 +12,7 @@
 #include <iostream>
 
 #define CONNECTION_PORT 69		//puerto TFTP
+#define PACKAGE_MAX_SIZE 516	
 
 
 typedef char _BYTE;
@@ -47,7 +48,8 @@ private:
 	std::string errorMsg;
 
 	unsigned int errorCode;
-	_BYTE *package;
+	_BYTE *inputPackage;
+	_BYTE *outputPackage;
 	bool packageArrived;
 };
 #endif // !NETWORKING_H

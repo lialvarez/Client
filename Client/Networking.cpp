@@ -9,9 +9,7 @@ Networking::Networking(std::string _serverAddress)
 	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
 
 	packageArrived = false;
-
 	serverAddress = _serverAddress.c_str();		//_serverAddress viene del main, del teclado. Es el ip que se ingresa.
-
 	startConnection(serverAddress);
 }
 
@@ -81,43 +79,43 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	switch (opCode)
 	{
 	case RRQ_OP:
-		package = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		package[0] = 0x00;
-		package[1] = (_BYTE)1;
-		strcpy((char *)package + 2, fileToTransfer.c_str());
-		strcpy((char *)package + 2 + (fileToTransfer.length() + 1), mode.c_str());
+		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (_BYTE)1;
+		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
+		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case WRQ_OP:
-		package = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		package[0] = 0;
-		package[1] = (_BYTE)2;
-		strcpy((char *)package + 2, fileToTransfer.c_str());
-		strcpy((char *)package + 2 + (fileToTransfer.length() + 1), mode.c_str());
+		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage[0] = 0;
+		outputPackage[1] = (_BYTE)2;
+		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
+		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case DATA_OP:
 		char auxBuffer[512];
 		unsigned int bytesToSend = fread(auxBuffer, 1, 512, filePointer);	//cuenta los bytes a enviar
-		package = new _BYTE[bytesToSend + 4];
-		package[0] = 0x00;
-		package[1] = (_BYTE)3;
-		package[2] = (blockNumber & 0xFF00)>>8;
-		package[3] = (blockNumber & 0x00FF);
-		strcpy((char *)package + 4, auxBuffer);
+		outputPackage = new _BYTE[bytesToSend + 4];
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (_BYTE)3;
+		outputPackage[2] = (blockNumber & 0xFF00)>>8;
+		outputPackage[3] = (blockNumber & 0x00FF);
+		strcpy((char *)outputPackage + 4, auxBuffer);
 		break;
 	case ACK_OP:
-		package = new _BYTE[4];
-		package[0] = 0x00;
-		package[1] = (_BYTE)4;
-		package[2] = (blockNumber & 0xFF00) >> 8;
-		package[3] = (blockNumber & 0x00FF);
+		outputPackage = new _BYTE[4];
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (_BYTE)4;
+		outputPackage[2] = (blockNumber & 0xFF00) >> 8;
+		outputPackage[3] = (blockNumber & 0x00FF);
 		break;
 	case ERROR_OP:
-		package = new _BYTE[errorMsg.length() + 5];
-		package[0] = 0x00;
-		package[1] = (_BYTE)5;
-		package[2] = 0x00;
-		package[3] = (_BYTE)errorCode;
-		strcpy((char *)package + 4, errorMsg.c_str());
+		outputPackage = new _BYTE[errorMsg.length() + 5];
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (_BYTE)5;
+		outputPackage[2] = 0x00;
+		outputPackage[3] = (_BYTE)errorCode;
+		strcpy((char *)outputPackage + 4, errorMsg.c_str());
 		break;
 	default:
 		break;
@@ -133,7 +131,7 @@ void Networking::sendPackage()
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
-	boost::asio::async_write(*clientSocket, boost::asio::buffer(package, 600), handler); //ver si cambiar el 600
+	boost::asio::async_write(*clientSocket, boost::asio::buffer(outputPackage, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
 }
 
 void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {
@@ -142,8 +140,8 @@ void Networking::callback1(const boost::system::error_code& error, std::size_t t
 void Networking::receivePackage()
 {
 	boost::system::error_code error;
-	_BYTE emptyBuf[600] = { NULL };
-	_BYTE buf[600] = { NULL };	//VER si cambiar o no el 600 (podria ser de 516, tamaño minimo)
+	_BYTE emptyBuf[PACKAGE_MAX_SIZE] = { NULL };
+	_BYTE buf[PACKAGE_MAX_SIZE] = { NULL };			
 
 	std::cout << "Receiving package" << std::endl;
 
@@ -152,7 +150,7 @@ void Networking::receivePackage()
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
-	async_read(*clientSocket, boost::asio::buffer(buf, 600), handler);				// Si recibe algo, lo guarda en buffer.
+	async_read(*clientSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf.
 
 	if (strcmp(buf, emptyBuf))
 	{
@@ -161,6 +159,16 @@ void Networking::receivePackage()
 	else
 	{
 		packageArrived = true;
+
+		if (error != boost::asio::error::eof)											//Se guarda buf en inputPackage (el paquete recibido)
+		{
+			for (unsigned int i = 0; i < PACKAGE_MAX_SIZE; i++)
+			{
+				inputPackage[i] = buf[i];
+			}
+		}
+		else
+			std::cout << "Error while trying to connect to receive package %d" << error.message() << std::endl;
 	}
 }
 
