@@ -23,6 +23,8 @@ public:
 	void setCommandLine();
 	void resetTerminal();
 	void fileErrorMsg(std::string fileName);
+	void fileSendEnd(std::string fileName);
+	void fileREceiveEnd(std::string fileName);
 
 	WINDOW * terminalWindow;
 private:

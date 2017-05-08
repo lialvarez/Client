@@ -18,10 +18,12 @@ class NetworkEventSource : public genericEventSource
 public:
 	NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface){}
 	bool isThereEvent();
+	genericEvent* insertEvent();
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
-private:
 	Networking *networkInterface;
+private:
+	
 	std::string serverIP;
 };
 

@@ -14,21 +14,21 @@ public:
 	//genericState* on_SendError(genericEvent *ev);
 	//genericState* on_ReceiveError(genericEvent *ev);
 
-	genericState* on_FileError(genericEvent *ev);
-	genericState* on_InvalidCommand(genericEvent *ev);
+	genericState* on_FileError(genericEvent *ev, usefulInfo *Info);
+	genericState* on_InvalidCommand(genericEvent *ev, usefulInfo *Info);
 	genericState* on_CloseClient(genericEvent* ev);
-	genericState* on_HelpRequest(genericEvent *ev);
-	genericState* on_ClearTerminal(genericEvent *ev);
-	genericState* on_EmptyCommand(genericEvent *ev);
+	genericState* on_HelpRequest(genericEvent *ev, usefulInfo *Info);
+	genericState* on_ClearTerminal(genericEvent *ev, usefulInfo *Info);
+	genericState* on_EmptyCommand(genericEvent *ev, usefulInfo *Info);
 
 };
 
 class ST_ReceiveFirstAck :public genericState
 {
 public:
-	genericState* on_Ack(genericEvent* ev);
-	genericState* on_Error(genericEvent* ev);
-	genericState* on_Timeout(genericEvent* ev);
+	genericState* on_Ack(genericEvent* ev, usefulInfo *Info);
+	genericState* on_Error(genericEvent* ev, usefulInfo *Info);
+	genericState* on_Timeout(genericEvent* ev, usefulInfo *Info);
 	genericState* on_ConnectionFailed(genericEvent* ev);
 
 	std::string getSelectedFile() { return fileToTransfer; }
@@ -42,11 +42,11 @@ class ST_ReceiveAck : public genericState
 {
 public:
 
-	genericState* on_Ack(genericEvent* ev);
+	genericState* on_Ack(genericEvent* ev, usefulInfo *Info);
 	genericState* on_Error(genericEvent* ev);
-	genericState* on_Timeout(genericEvent* ev);
+	genericState* on_Timeout(genericEvent* ev, usefulInfo *Info);
 	genericState* on_ConnectionFailed(genericEvent* ev);
-	genericState* on_LastData(genericEvent* ev);
+	genericState* on_LastData(genericEvent* ev, usefulInfo *Info);
 
 private:
 };
@@ -55,9 +55,9 @@ class ST_ReceiveLastAck : public genericState
 {
 public:
 
-	genericState* on_Ack(genericEvent* ev);
+	genericState* on_Ack(genericEvent* ev, usefulInfo *Info);
 	genericState* on_Error(genericEvent* ev);
-	genericState* on_Timeout(genericEvent* ev);
+	genericState* on_Timeout(genericEvent* ev, usefulInfo *Info);
 	genericState* on_ConnectionFailed(genericEvent* ev);
 
 private:

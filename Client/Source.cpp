@@ -24,11 +24,11 @@ int main(int argc, char *argv[])
 {
 	userData_t userData;
 	Screen Terminal;
-	Networking network;
-	NetworkEventSource(&network);
+	Networking Network(userData.serverAddress);
+	NetworkEventSource networkSource(&Network);
 	UserEventSource userSource(&Terminal);
-	TimeoutEventSource Timeout;
-	usefulInfo Info(userData.serverAddress, &userSource, &Timeout);	//Se crea la instancia de usefulInfo
+	TimeoutEventSource timeoutSource;
+	usefulInfo Info(userData.serverAddress, &userSource, &timeoutSource, &networkSource);	//Se crea la instancia de usefulInfo
 	eventGenerator evGen(&Info);	//creo la instancia del generador de eventos
 	genericEvent *ev;
 	genericFSM FSM;
