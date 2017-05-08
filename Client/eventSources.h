@@ -7,6 +7,7 @@
 #include <boost\asio.hpp>
 #include "Screen.h"
 #include "genericEventSource.h"
+#include <boost\asio\deadline_timer.hpp>
 
 
 class NetworkEventSource : public genericEventSource
@@ -46,16 +47,17 @@ class TimeoutEventSource : public genericEventSource
 {
 public:
 
-	TimeoutEventSource() :timer(io, boost::posix_time::minutes(1)), timeout(false) {}
+	TimeoutEventSource() :timer(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
 	genericEvent* insertEvent();
 private:
-	boost::asio::io_service io;	
+	boost::asio::io_service ioForTimer;	
 	boost::asio::deadline_timer timer;
 	bool timeout;
 	void setTimeout(const boost::system::error_code& /*e*/);
+	void handler(const boost::system::error_code&, boost::asio::deadline_timer* t); //prototipo del handler
 };
 
 class SoftwareEventSource : public genericEventSource

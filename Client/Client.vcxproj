@@ -107,6 +107,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;pdcurses.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\M\Source\Repos\Client\Client\Additional Libraries;C:\Users\M\Source\Repos\Client\Client;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -212,7 +214,6 @@
     <Import Project="..\packages\boost_wserialization-vc140.1.64.0.0\build\native\boost_wserialization-vc140.targets" Condition="Exists('..\packages\boost_wserialization-vc140.1.64.0.0\build\native\boost_wserialization-vc140.targets')" />
     <Import Project="..\packages\boost_zlib-vc140.1.64.0.0\build\native\boost_zlib-vc140.targets" Condition="Exists('..\packages\boost_zlib-vc140.1.64.0.0\build\native\boost_zlib-vc140.targets')" />
     <Import Project="..\packages\boost-vc140.1.64.0.0\build\native\boost-vc140.targets" Condition="Exists('..\packages\boost-vc140.1.64.0.0\build\native\boost-vc140.targets')" />
-    <Import Project="..\packages\pdcurses_vc120.3.4.0.3\build\native\pdcurses_vc120.targets" Condition="Exists('..\packages\pdcurses_vc120.3.4.0.3\build\native\pdcurses_vc120.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -258,6 +259,5 @@
     <Error Condition="!Exists('..\packages\boost_wserialization-vc140.1.64.0.0\build\native\boost_wserialization-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_wserialization-vc140.1.64.0.0\build\native\boost_wserialization-vc140.targets'))" />
     <Error Condition="!Exists('..\packages\boost_zlib-vc140.1.64.0.0\build\native\boost_zlib-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost_zlib-vc140.1.64.0.0\build\native\boost_zlib-vc140.targets'))" />
     <Error Condition="!Exists('..\packages\boost-vc140.1.64.0.0\build\native\boost-vc140.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\boost-vc140.1.64.0.0\build\native\boost-vc140.targets'))" />
-    <Error Condition="!Exists('..\packages\pdcurses_vc120.3.4.0.3\build\native\pdcurses_vc120.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\pdcurses_vc120.3.4.0.3\build\native\pdcurses_vc120.targets'))" />
   </Target>
 </Project>
