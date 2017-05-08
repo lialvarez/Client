@@ -16,7 +16,7 @@ genericState * genericFSM::getCurrentState()
 	return currentState;
 }
 
-void genericFSM::dispatch(genericEvent *ev)
+void genericFSM::dispatch(genericEvent *ev, usefulInfo *Info)
 {
 	genericState *newState = nullptr;
 	{
@@ -26,19 +26,19 @@ void genericFSM::dispatch(genericEvent *ev)
 			newState = currentState->on_NoEv(ev);
 			break;
 		case PUT:
-			newState = currentState->on_Put(ev);
+			newState = currentState->on_Put(ev, Info);
 			break;
 		case GET:
-			newState = currentState->on_Get(ev);
+			newState = currentState->on_Get(ev, Info);
 			break;
 		case QUIT:
-			newState = currentState->on_Quit(ev);
+			newState = currentState->on_CloseClient(ev);
 			break;
 		case HELP:
 			newState = currentState->on_Help(ev);
 			break;
 		case CLEAR:
-			newState = currentState->on_Clear(ev);
+			newState = currentState->on_ClearTerminal(ev);
 			break;
 		case INVALID:
 			newState = currentState->on_InvalidCommand(ev);
@@ -53,7 +53,7 @@ void genericFSM::dispatch(genericEvent *ev)
 			newState = currentState->on_Data(ev);
 			break;
 		case ACK:
-			newState = currentState->on_Ack(ev);
+			newState = currentState->on_Ack(ev, Info);
 			break;
 		case WRQ:
 			newState = currentState->on_WRQ(ev);
@@ -65,7 +65,7 @@ void genericFSM::dispatch(genericEvent *ev)
 			newState = currentState->on_Error(ev);
 			break;
 		case LAST_DATA:
-			newState = currentState->on_LastData(ev);
+			newState = currentState->on_LastData(ev, Info);
 			break;
 		case TIMEOUT:
 			newState = currentState->on_Timeout(ev);

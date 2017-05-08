@@ -73,15 +73,15 @@ bool UserEventSource::isThereEvent()
 	case ENTER:
 
 		command = std::string(buffer.begin(), buffer.end());	//Almaceno la linea de comando ingresada en command
-		std::transform(command.begin(), command.end(), command.begin(), tolower);	//
+		std::transform(command.begin(), command.end(), command.begin(), tolower);	//transformo la linea ingresada a minuscula
 		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
 
-		if (words[0].size() == 0)
+		if (words[0].size() == 0)	//Si no se ingresaron comandos
 		{
 			evCode = EMPTY_COMMAND;
 			ret = true;
 		}
-		else if (words.size() == 1)
+		else if (words.size() == 1)	//Si se ingreso un comando de una sola palabra
 		{
 			if (strcmp(words[0].c_str(), "help") == 0)
 			{
@@ -104,7 +104,7 @@ bool UserEventSource::isThereEvent()
 				ret = true;
 			}
 		}
-		else if (words.size() == 2)
+		else if (words.size() == 2)	//Si se ingreso un comando con dos "palabras"
 		{
 			fileToTransfer = words[1];
 			auxFile.open(words[1].c_str());
@@ -146,13 +146,13 @@ bool UserEventSource::isThereEvent()
 				ret = true;
 			}
 		}
-		else
+		else	//Si no es ninguna de las anteriores estoy seguro de que el comando es invalido
 		{
 			ret = true;
 			evCode = INVALID;
 		}
-		buffer.clear();
-		words.clear();
+		buffer.clear();	//Limpia el buffer
+		words.clear();	//Limpia el vector
 		break;
 
 	default:

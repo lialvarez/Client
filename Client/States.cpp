@@ -6,36 +6,38 @@
 
 //ST_Idle
 
-genericState *ST_Idle::on_Put(genericEvent *ev)
+genericState *ST_Idle::on_Put(genericEvent *ev, usefulInfo *Info)
 {
 	EV_Put * PEv = (EV_Put *)ev;
 	//SendWRQ(PEv->getSelectedFile())	//Funcion que envia el WRQ con el nombre del archivo
-	genericState *ret = (genericState *) new (ST_ReceiveFirstAck);
+	genericState *ret = (genericState *) new ST_ReceiveFirstAck();
 	ret->setFileToTransfer(PEv->getSelectedFile());	//Le indica al estado ST_receiveFirstAck cual es el archivo que se envio. En caso de recibir
 													//timeout se utilizara esta info para reenviar el WRQ del archivo correspondiente.
+	Info->timeout->startTimer();	//Inicia el timer
 	return ret;
 }
 
-genericState *ST_Idle::on_Get(genericEvent *ev)
+genericState *ST_Idle::on_Get(genericEvent *ev, usefulInfo *Info)
 {
 	EV_Get * GEv = (EV_Get *)ev;
 	//sendRRQ(GEv->getSelectedFile());	//Funcion que envia el RRQ con el nombre del archivo
-	genericState *ret = (genericState *) new (ST_ReceiveFirstData);
+	genericState *ret = (genericState *) new ST_ReceiveFirstData;
+	ret->setFileToTransfer(GEv->getSelectedFile());	//Le indica al estado ST_ReceiveFirstAck cual es el archivo que se envio.
+	Info->timeout->startTimer();	//Inicia el timer
 	return ret;
 }
-
 
 genericState *ST_Idle::on_HelpRequest(genericEvent *ev)
 {
 	EV_Help * HEvent = (EV_Help *)ev;	//Rutina de accion que muestra instrucciones en pantalla
 	HEvent->terminal->outputHelp();
-	genericState *ret = (genericState*) new ST_Idle();
+	genericState *ret = (genericState*) new ST_Idle;
 	return ret;
 }
 
 genericState *ST_Idle::on_CloseClient(genericEvent* ev)
 {
-	genericState *ret = (genericState*) new ST_Idle();
+	genericState *ret = (genericState*) new ST_Idle;
 	ret->setLastEvent(QUIT);
 	return ret;
 }
@@ -44,7 +46,7 @@ genericState *ST_Idle::on_ClearTerminal(genericEvent *ev)
 {
 	EV_Clear* CEvent = (EV_Clear *)ev;
 	CEvent->terminal->resetTerminal();	//Rutina de accion que borra el terminal
-	genericState *ret = (genericState*) new ST_Idle();
+	genericState *ret = (genericState*) new ST_Idle;
 	return ret;
 }
 
