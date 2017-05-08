@@ -11,7 +11,7 @@ public:
 	virtual genericState* on_NoEv(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_Put(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_Get(genericEvent* ev) { return nullptr; }
-	virtual genericState* on_Quit(genericEvent* ev) { return nullptr; }
+	virtual genericState* on_CloseClient(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_Help(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_ClearTerminal(genericEvent *ev) { return nullptr; }
 	virtual genericState* on_EmptyCommand(genericEvent* ev) { return nullptr; }

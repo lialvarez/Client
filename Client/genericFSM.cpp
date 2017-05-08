@@ -32,7 +32,7 @@ void genericFSM::dispatch(genericEvent *ev)
 			newState = currentState->on_Get(ev);
 			break;
 		case QUIT:
-			newState = currentState->on_Quit(ev);
+			newState = currentState->on_CloseClient(ev);
 			break;
 		case HELP:
 			newState = currentState->on_Help(ev);
