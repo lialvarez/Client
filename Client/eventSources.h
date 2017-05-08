@@ -61,8 +61,6 @@ private:
 	bool timeout;
 	void setTimeout(const boost::system::error_code& /*e*/);
 	void handler(const boost::system::error_code&, boost::asio::deadline_timer* t); //prototipo del handler
-	
- //boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(60));
 };
 
 class SoftwareEventSource : public genericEventSource

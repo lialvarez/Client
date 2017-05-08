@@ -250,14 +250,13 @@ void TimeoutEventSource::startTimer()
 
 	//boost::asio::deadline_timer t(ioForTimer, boost::posix_time::seconds(60)); 
 
-	t.async_wait(boost::bind(handler,boost::asio::placeholders::error, &t));
+	timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));
 }
 
 void TimeoutEventSource::stopTimer()
 {
 	//timer.cancel();	//Se cancela el timer. No anda esto. ESTOY PROBANDO CON OTRAS
 }
-
 
 //////////ver
 void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* t)  //PRUEBA TIMER (le agrego 2 params para que repita)
