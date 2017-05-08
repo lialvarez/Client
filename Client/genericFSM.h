@@ -1,6 +1,6 @@
 #ifndef GENERICFSM_H
 #define GENERICFSM
-
+#include "usefulInfo.h"
 #include "genericState.h"
 #include "genericEvent.h"
 
@@ -10,7 +10,7 @@ public:
 	genericFSM();	//Crea un estado al que apunta currentState
 	~genericFSM();	//Destruye el estado al que apunta currentState
 
-	void dispatch(genericEvent * ev);	//llama a la funcion del estado al que apunta current state que repsonde al evento recibido
+	void dispatch(genericEvent * ev, usefulInfo *Info);	//llama a la funcion del estado al que apunta current state que repsonde al evento recibido
 	genericState * getCurrentState();
 
 protected:
