@@ -6,22 +6,24 @@
 #include <fstream>
 #include <boost\asio.hpp>
 #include "Screen.h"
+#include "Networking.h"
 #include "genericEventSource.h"
 #include <boost\asio\deadline_timer.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/function.hpp>
 
 
 class NetworkEventSource : public genericEventSource
 {
 public:
-	NetworkEventSource();
-	~NetworkEventSource();
+	NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface){}
 	bool isThereEvent();
+	genericEvent* insertEvent();
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
+	Networking *networkInterface;
 private:
+	
 	std::string serverIP;
 };
 
@@ -50,18 +52,15 @@ class TimeoutEventSource : public genericEventSource
 {
 public:
 
-	TimeoutEventSource() :t(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
-	//TimeoutEventSource();
+	TimeoutEventSource() :timer(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
 	genericEvent* insertEvent();
-
-	boost::function<void(const boost::system::error_code&, boost::asio::deadline_timer*)> HANDLER123;
 	
 private:
 	boost::asio::io_service ioForTimer;	
-	boost::asio::deadline_timer t;
+	boost::asio::deadline_timer timer;
 	bool timeout;
 	void setTimeout(const boost::system::error_code& /*e*/);
 	void handler(const boost::system::error_code&, boost::asio::deadline_timer* t); //prototipo del handler

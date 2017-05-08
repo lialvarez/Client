@@ -75,3 +75,17 @@ void Screen::outputInvalid(std::string command)
 	refresh();
 	setCommandLine();
 }
+
+void Screen::fileSendEnd(std::string fileName)
+{
+	printw("\nArchivo '"); printw(fileName.c_str()); printw("' enviado exitosamente\n");
+	refresh();
+	setCommandLine();
+}
+
+void Screen::fileREceiveEnd(std::string fileName)
+{
+	printw("\nArchivo '"); printw(fileName.c_str()); printw("' recibido exitosamente\n");
+	refresh();
+	setCommandLine();
+}
