@@ -1,6 +1,6 @@
 
 #include "Networking.h"
-#include <conio.h>
+
 
 Networking::Networking(std::string _serverAddress)
 {
@@ -26,7 +26,7 @@ void Networking::startConnection(const char* _serverAddress) {
 
 	endpoint = clientResolver->resolve(boost::asio::ip::tcp::resolver::query(_serverAddress, CONNECTION_PORT));
 
-	do {
+	do {													//ponerle timer o algo para que no quede para siempre!!!!!!!!!!!!!!!
 		exit = true;
 		try {
 			boost::asio::connect(*clientSocket, endpoint);
@@ -127,14 +127,14 @@ void Networking::sendPackage()
 	std::cout << std::endl << "Sending package" << std::endl;
 
 	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
-		boost::bind(&Networking::callback1, this,
+		boost::bind(&Networking::afterSending, this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
 	boost::asio::async_write(*clientSocket, boost::asio::buffer(outputPackage, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
 }
 
-void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {
+void Networking::afterSending(const boost::system::error_code& error, std::size_t transfered_bytes) {
 }
 
 void Networking::receivePackage()
@@ -146,11 +146,12 @@ void Networking::receivePackage()
 	std::cout << "Receiving package" << std::endl;
 
 	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
-		boost::bind(&Networking::callback2, this,
+		boost::bind(&Networking::afterReceiving, this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
-	async_read(*clientSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf.
+	async_read(*clientSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf
+
 
 	if (strcmp(buf, emptyBuf))
 	{
@@ -172,5 +173,5 @@ void Networking::receivePackage()
 	}
 }
 
-void Networking::callback2(const boost::system::error_code& error, std::size_t transfered_bytes) {
+void Networking::afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes) {
 }

@@ -30,8 +30,8 @@ public:
 	void sendAck(unsigned int blockNumber = 0);
 	void sendError(std::string errorMsg, unsigned int errorCode);
 	void receivePackage();
-	void callback1(const boost::system::error_code& error, std::size_t transfered_bytes);
-	void callback2(const boost::system::error_code& error, std::size_t transfered_bytes);
+	void afterSending(const boost::system::error_code& error, std::size_t transfered_bytes);   //callback que no se usa (NO BORRAR)
+	void afterReceiving(const boost::system::error_code& error, std::size_t transfered_bytes); //callback que no se usa (NO BORRAR)
 	void startConnection(const char* IP);
 
 private:
