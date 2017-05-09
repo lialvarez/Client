@@ -11,6 +11,9 @@
 #include <boost\asio\deadline_timer.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <ctime>
+
+#define ONE_MINUTE 60
 
 class NetworkEventSource : public genericEventSource
 {
@@ -50,19 +53,15 @@ private:
 class TimeoutEventSource : public genericEventSource
 {
 public:
-
-	TimeoutEventSource() :timer(ioForTimer, boost::posix_time::minutes(1)), timeout(false) {} //constructor, setea el timer
+	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
 	void stopTimer();
 	genericEvent* insertEvent();
-	
 private:
-	boost::asio::io_service ioForTimer;	
-	boost::asio::deadline_timer timer;
-	bool timeout;
-	void setTimeout(const boost::system::error_code& /*e*/);
-	void handler(const boost::system::error_code&, boost::asio::deadline_timer* t); //prototipo del handler
+	clock_t tInicial;
+	bool timeout;	//Si está en true se cumplió el tiempo.
+	bool timerRunning;
 };
 
 class SoftwareEventSource : public genericEventSource

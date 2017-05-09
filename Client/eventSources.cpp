@@ -23,7 +23,6 @@ std::string NetworkEventSource::getServerIP()
 	return serverIP;
 }
 
-//HAY QUE COMPLETAR ESTO
 genericEvent * NetworkEventSource::insertEvent()
 {
 	genericEvent * ret;
@@ -31,10 +30,13 @@ genericEvent * NetworkEventSource::insertEvent()
 	switch (evCode)
 	{
 	case DATA:
+		ret = (genericEvent *) new EV_Data(networkInterface->getData());
 		break;
 	case CONNECTION_FAIL:
+		ret = (genericEvent *) new EV_ConnectionFailed();
 		break;
 	case ACK:
+
 		break;
 	case ERRO:
 		break;
@@ -202,33 +204,25 @@ genericEvent * UserEventSource::insertEvent()
 	switch (evCode)
 	{
 	case PUT:
-		ret = (genericEvent *) new EV_Put(terminal);
-		castedEvP = (EV_Put *)ret;
-		castedEvP->setSelectedFile(command);
+		ret = (genericEvent *) new EV_Put(fileToTransfer);
 		break;
 	case GET:
-		ret = (genericEvent *) new EV_Get(terminal);
-		castedEvG = (EV_Get *)ret;
-		castedEvG->setSelectedFile(command);
+		ret = (genericEvent *) new EV_Get(fileToTransfer);
 		break;
 	case HELP:
-		ret = (genericEvent *) new EV_Help(terminal);
+		ret = (genericEvent *) new EV_Help();
 		break;
 	case CLEAR:
-		ret = (genericEvent *) new EV_Clear(terminal);
+		ret = (genericEvent *) new EV_Clear();
 		break;
 	case EMPTY_COMMAND:
-		ret = (genericEvent *) new EV_EmptyCommand(terminal);
+		ret = (genericEvent *) new EV_EmptyCommand();
 		break;
 	case INVALID:
-		ret = (genericEvent *) new EV_InvalidCommand(terminal);
-		castedEvIC = (EV_InvalidCommand *)ret;
-		castedEvIC->setInvalidCommand(command);
+		ret = (genericEvent *) new EV_InvalidCommand(command);
 		break;
 	case FILE_ERROR:
-		ret = (genericEvent *) new EV_FileError(terminal);
-		castedEvFE = (EV_FileError *)ret;
-		castedEvFE->setFileNotFound(fileToTransfer);
+		ret = (genericEvent *) new EV_FileError(fileToTransfer);
 		break;
 	case QUIT:
 		ret = (genericEvent *) new EV_Quit;
@@ -241,57 +235,40 @@ genericEvent * UserEventSource::insertEvent()
 
 /*****  TIMEOUTS EVENT SOURCE  *****/
 
-//NO TOCAR LOS DE TIMEOUT, CREO QUE YA ESTAN LISTOS
+TimeoutEventSource::TimeoutEventSource()
+{
+	timeout = false;
+	timerRunning = false;
+}
 
 bool TimeoutEventSource::isThereEvent()
 {
-	ioForTimer.poll();			//Si se cumple el tiempo del timer, se ejecuta el handler correspondiente.
-
-	bool ret = timeout;			//Para que luego devuelva true si se cumplio timeout y false en caso contrario.
-
-	if (timeout)
+	if (((clock() - tInicial) > ONE_MINUTE * CLOCKS_PER_SEC) && timerRunning)
 	{
+		timeout = true;
+		timerRunning = false;
 		evCode = TIMEOUT;
-		//timeout = false;		//vuelvo a poner en false para que espere al siguiente timeout.
-		startTimer();			//Se reinicia el timer.
 	}
 	else
 	{
+		timeout = false;
 		evCode = NO_EV;
 	}
-	return ret;					//Se devuelve si hubo timeout o no.
-}
-
-void TimeoutEventSource::setTimeout(const boost::system::error_code& /*e*/) //VER DE USARLA
-{
-	//timeout = true;			//Set timeout modifica una variable de control que indica si ocurrio un timeout
+	return timeout;
 }
 
 void TimeoutEventSource::startTimer()
+
 {
-	timeout = false;		//Variable de control indicando que no ocurrio un timeout.
-
-	/*boost::asio::deadline_timer timer(ioForTimer, boost::posix_time::seconds(60)); */
-
-	/*timer.async_wait(boost::bind(handler,boost::asio::placeholders::error, &timer));*/
+	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
+	tInicial = clock();
+	timerRunning = true;
 }
 
-void TimeoutEventSource::stopTimer()
-{
-	//timer.cancel();	//Se cancela el timer. No anda esto. ESTOY PROBANDO CON OTRAS
-}
-
-//////////ver
-void TimeoutEventSource::handler(const boost::system::error_code&, boost::asio::deadline_timer* timer)  //PRUEBA TIMER (le agrego 2 params para que repita)
-{
-	timeout = true;				//Se indica que ocurrió un timeout.
-}
-/////////////
-
-genericEvent * TimeoutEventSource::insertEvent() 
+genericEvent * TimeoutEventSource::insertEvent()
 {
 	genericEvent * ret;
-	//Hago un switch solo para mantener la estructura del metodo en las otras clases
+
 	switch (evCode)
 	{
 	case TIMEOUT:

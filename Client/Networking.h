@@ -14,10 +14,10 @@
 #define CONNECTION_PORT 69		//puerto TFTP
 #define PACKAGE_MAX_SIZE 516	
 
-
 typedef char _BYTE;
 
-typedef enum { RRQ_OP, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP }opCodes;
+typedef enum { RRQ_OP = 1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP }opCodes;
+typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
 
 class Networking
 {
@@ -30,10 +30,14 @@ public:
 	void sendAck(unsigned int blockNumber = 0);
 	void sendError(std::string errorMsg, unsigned int errorCode);
 	void receivePackage();
+	errorCodes getErrorCode();
+	std::string getData();
+	std::string getErrorMsg();
+
 	void callback1(const boost::system::error_code& error, std::size_t transfered_bytes);
 	void callback2(const boost::system::error_code& error, std::size_t transfered_bytes);
-	void startConnection();
 
+	void startConnection();
 	void startConnection()
 	{
 		bool exit;
@@ -61,14 +65,20 @@ private:
 
 	void packageSET(opCodes opCode, unsigned int blockNumber = 0, FILE *filePointer = NULL);
 	void sendPackage();
+	void packageDecode();
 
 	std::string serverAddress;
 	std::string fileToTransfer;
-	std::string errorMsg;
 
-	unsigned int errorCode;
+	opCodes receivedPackageType;
+	std::string data;	//Se almacena la data en caso de recibir DATA
+	std::string errorMsg;
+	errorCodes errorCode;
+	unsigned int blockNumber;
+
 	_BYTE *inputPackage;
 	_BYTE *outputPackage;
+	
 	bool packageArrived;
 };
 #endif // !NETWORKING_H

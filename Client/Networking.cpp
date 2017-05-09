@@ -3,6 +3,7 @@
 #include <boost/bind.hpp>
 #include <conio.h>
 
+
 Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress)
 {
 	IO_handler = new boost::asio::io_service();
@@ -11,8 +12,6 @@ Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress
 
 	packageArrived = false;
 }
-
-
 
 Networking::~Networking()
 {
@@ -44,6 +43,42 @@ Networking::~Networking()
 //	} while (!exit);
 //}
 
+void Networking::packageDecode()
+{
+	receivedPackageType = (opCodes)inputPackage[1];
+	switch (receivedPackageType)
+	{
+	case DATA_OP:
+		blockNumber = (inputPackage[2] << 8) + inputPackage[3];
+		data = inputPackage[4];
+		break;
+	case ACK_OP:
+		blockNumber = (inputPackage[2] << 8) + inputPackage[3];
+		break;
+	case ERROR_OP:
+		errorCode = (errorCodes)inputPackage[3];
+		errorMsg = inputPackage[4];
+		break;
+	default:
+		break;
+	}
+}
+
+errorCodes Networking::getErrorCode()
+{
+	return errorCode;
+}
+
+std::string Networking::getErrorMsg()
+{
+	return errorMsg;
+}
+
+std::string Networking::getData()
+{
+	return data;
+}
+
 void Networking::sendWRQ(std::string fileToTransfer)
 {
 	this->fileToTransfer = fileToTransfer;
@@ -72,7 +107,7 @@ void Networking::sendAck(unsigned int blockNumber /*= 0*/)
 
 void Networking::sendError(std::string errorMsg, unsigned int errorCode)
 {
-	this->errorCode = errorCode;
+	this->errorCode = (errorCodes)errorCode;
 	this->errorMsg = errorMsg;
 	packageSET(ERROR_OP);
 	sendPackage();
@@ -86,14 +121,14 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	case RRQ_OP:
 		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)1;
+		outputPackage[1] = (_BYTE)RRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case WRQ_OP:
 		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		outputPackage[0] = 0;
-		outputPackage[1] = (_BYTE)2;
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (_BYTE)WRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
@@ -102,7 +137,7 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 		unsigned int bytesToSend = fread(auxBuffer, 1, 512, filePointer);	//cuenta los bytes a enviar
 		outputPackage = new _BYTE[bytesToSend + 4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)3;
+		outputPackage[1] = (_BYTE)DATA_OP;
 		outputPackage[2] = (blockNumber & 0xFF00)>>8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		strcpy((char *)outputPackage + 4, auxBuffer);
@@ -110,14 +145,14 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	case ACK_OP:
 		outputPackage = new _BYTE[4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)4;
+		outputPackage[1] = (_BYTE)ACK_OP;
 		outputPackage[2] = (blockNumber & 0xFF00) >> 8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		break;
 	case ERROR_OP:
 		outputPackage = new _BYTE[errorMsg.length() + 5];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)5;
+		outputPackage[1] = (_BYTE)ERROR_OP;
 		outputPackage[2] = 0x00;
 		outputPackage[3] = (_BYTE)errorCode;
 		strcpy((char *)outputPackage + 4, errorMsg.c_str());
@@ -139,8 +174,7 @@ void Networking::sendPackage()
 	boost::asio::async_write(*clientSocket, boost::asio::buffer(outputPackage, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
 }
 
-void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {
-}
+void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {}
 
 void Networking::receivePackage()
 {
@@ -159,7 +193,7 @@ void Networking::receivePackage()
 	
 
 
-	if (strcmp(buf, emptyBuf))
+	if (!strcmp(buf, emptyBuf))
 	{
 		packageArrived = false;
 	}
