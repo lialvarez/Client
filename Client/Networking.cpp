@@ -1,17 +1,18 @@
-
 #include "Networking.h"
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include <conio.h>
 
-Networking::Networking(std::string _serverAddress)
+Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress)
 {
 	IO_handler = new boost::asio::io_service();
 	clientSocket = new boost::asio::ip::tcp::socket(*IO_handler);
 	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
 
 	packageArrived = false;
-	serverAddress = _serverAddress.c_str();		//_serverAddress viene del main, del teclado. Es el ip que se ingresa.
-	startConnection(serverAddress);
 }
+
+
 
 Networking::~Networking()
 {
@@ -20,24 +21,28 @@ Networking::~Networking()
 	delete clientResolver;
 }
 
-void Networking::startConnection(const char* _serverAddress) {
+//Esto esta comentado pq si pongo la definicion de la funcion en el .cpp tenemos un error.
+//Pusimos la definicion en el .h
 
-	bool exit;
-
-	endpoint = clientResolver->resolve(boost::asio::ip::tcp::resolver::query(_serverAddress, CONNECTION_PORT));
-
-	do {
-		exit = true;
-		try {
-			boost::asio::connect(*clientSocket, endpoint);
-		}
-		catch (const std::exception& e)
-		{
-			std::cout << "Waiting for server." << std::endl;
-			exit = false;
-		}
-	} while (!exit);
-}
+//void Networking::startConnection() 
+//{
+//
+//	bool exit;
+//
+//	endpoint = clientResolver->resolve(boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
+//
+//	do {
+//		exit = true;
+//		try {
+//			boost::asio::connect(*clientSocket, endpoint);
+//		}
+//		catch (const std::exception& e)
+//		{
+//			std::cout << "Waiting for server." << std::endl;
+//			exit = false;
+//		}
+//	} while (!exit);
+//}
 
 void Networking::sendWRQ(std::string fileToTransfer)
 {
@@ -151,6 +156,8 @@ void Networking::receivePackage()
 			boost::asio::placeholders::bytes_transferred));
 
 	async_read(*clientSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf.
+	
+
 
 	if (strcmp(buf, emptyBuf))
 	{
