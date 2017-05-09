@@ -7,7 +7,10 @@
 
 /*****  NETWORK EVENT SOURCE  *****/
 
-bool NetworkEventSource::isThereEvent() { return false; } //MALE: esta es la funcion que lee lo que le envian por red
+bool NetworkEventSource::isThereEvent()
+{ 
+	return false;
+} //MALE: esta es la funcion que lee lo que le envian por red
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
 	serverIP = _serverIP;
@@ -16,6 +19,17 @@ void NetworkEventSource::setServerIP(std::string _serverIP)
 std::string NetworkEventSource::getServerIP()
 {
 	return serverIP;
+}
+
+genericEvent * NetworkEventSource::insertEvent()
+{
+	genericEvent * ret;
+
+	switch (switch_on)
+	{
+	default:
+		break;
+	}
 }
 
 /*****  USER EVENT SOURCE  *****/
