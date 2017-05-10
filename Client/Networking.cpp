@@ -43,6 +43,20 @@ Networking::~Networking()
 //	} while (!exit);
 //}
 
+bool Networking::connectionLost()
+{
+	bool ret = false;
+
+	//armar la funcion aca
+
+	return ret;
+}
+
+unsigned int Networking::getBlockNumber()
+{
+	return blockNumber;
+}
+
 void Networking::packageDecode()
 {
 	receivedPackageType = (opCodes)inputPackage[1];
@@ -119,42 +133,42 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	switch (opCode)
 	{
 	case RRQ_OP:
-		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)RRQ_OP;
+		outputPackage[1] = (MYBYTE)RRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case WRQ_OP:
-		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)WRQ_OP;
+		outputPackage[1] = (MYBYTE)WRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case DATA_OP:
 		char auxBuffer[512];
 		unsigned int bytesToSend = fread(auxBuffer, 1, 512, filePointer);	//cuenta los bytes a enviar
-		outputPackage = new _BYTE[bytesToSend + 4];
+		outputPackage = new MYBYTE[bytesToSend + 4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)DATA_OP;
+		outputPackage[1] = (MYBYTE)DATA_OP;
 		outputPackage[2] = (blockNumber & 0xFF00)>>8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		strcpy((char *)outputPackage + 4, auxBuffer);
 		break;
 	case ACK_OP:
-		outputPackage = new _BYTE[4];
+		outputPackage = new MYBYTE[4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)ACK_OP;
+		outputPackage[1] = (MYBYTE)ACK_OP;
 		outputPackage[2] = (blockNumber & 0xFF00) >> 8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		break;
 	case ERROR_OP:
-		outputPackage = new _BYTE[errorMsg.length() + 5];
+		outputPackage = new MYBYTE[errorMsg.length() + 5];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)ERROR_OP;
+		outputPackage[1] = (MYBYTE)ERROR_OP;
 		outputPackage[2] = 0x00;
-		outputPackage[3] = (_BYTE)errorCode;
+		outputPackage[3] = (MYBYTE)errorCode;
 		strcpy((char *)outputPackage + 4, errorMsg.c_str());
 		break;
 	default:
@@ -176,11 +190,15 @@ void Networking::sendPackage()
 
 void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {}
 
-void Networking::receivePackage()
+bool Networking::receivePackage()
 {
+	//Recibe buf como referencia para almacenar el paquete recibido (en caso de haberlo) en el buffer indicado
+	bool ret;	//Variable donde se indica si se recibio algo
+
+
 	boost::system::error_code error;
-	_BYTE emptyBuf[PACKAGE_MAX_SIZE] = { NULL };
-	_BYTE buf[PACKAGE_MAX_SIZE] = { NULL };			
+	MYBYTE emptyBuf[PACKAGE_MAX_SIZE] = { NULL };
+	MYBYTE buf[PACKAGE_MAX_SIZE] = { NULL };			
 
 	std::cout << "Receiving package" << std::endl;
 
@@ -211,6 +229,13 @@ void Networking::receivePackage()
 		else
 			std::cout << "Error while trying to connect to receive package %d" << error.message() << std::endl;
 	}
+
+	return ret;
+}
+
+MYBYTE * Networking::getInputPackage()
+{
+	return inputPackage;
 }
 
 void Networking::callback2(const boost::system::error_code& error, std::size_t transfered_bytes) {

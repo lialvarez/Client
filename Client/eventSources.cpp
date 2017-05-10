@@ -9,9 +9,57 @@
 
 bool NetworkEventSource::isThereEvent()
 { 
-	
-	return false;
-} //MALE: esta es la funcion que lee lo que le envian por red
+	bool ret = false;
+	std::string errorMsg;
+	unsigned int errorCode;
+	std::string data;
+	unsigned int blockNumber;
+	if (!networkInterface->connectionLost())	//esta funcion hay que armarla, verifica que haya conexion
+	{
+		if (networkInterface->receivePackage())	//verifica si se recibio algo
+		{
+			switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
+			{
+			case DATA_OP:
+				data = (char *)networkInterface->getInputPackage()[4];
+				blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+				pkg = new Data(data, blockNumber);
+				ret = true;
+				if (data.length < 512)
+				{
+					evCode = LAST_DATA;
+				}
+				else
+				{
+					evCode = DATA;
+				}
+				break;
+			case ACK_OP:
+				blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+				pkg = new Acknowledgment(blockNumber);
+				ret = true;
+				evCode = ACK;
+				break;
+			case ERROR_OP:
+				errorCode = networkInterface->getInputPackage()[2];
+				errorMsg = (char *)networkInterface->getInputPackage()[4];
+				pkg = new Error(errorCode, errorMsg);
+				ret = true;
+				evCode = ERRO;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	else
+	{	
+		//Si se perdio la conexion, indico que el evento es del tipo connection_fail
+		ret = true;	
+		evCode = CONNECTION_FAIL;
+	}
+	return ret;
+}
 
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
@@ -36,9 +84,10 @@ genericEvent * NetworkEventSource::insertEvent()
 		ret = (genericEvent *) new EV_ConnectionFailed();
 		break;
 	case ACK:
-
+		ret = (genericEvent *) new EV_Ack(networkInterface->getBlockNumber());
 		break;
 	case ERRO:
+		ret = (genericEvent *) new EV_Error(networkInterface->getErrorCode(), networkInterface->getErrorMsg());
 		break;
 	default:
 		break;

@@ -5,6 +5,7 @@
 #include <vector>
 #include <fstream>
 #include <boost\asio.hpp>
+#include "Packages.h"
 #include "Screen.h"
 #include "Networking.h"
 #include "genericEventSource.h"
@@ -24,8 +25,8 @@ public:
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
 	Networking *networkInterface;
+	genericPackage *pkg;
 private:
-	
 	std::string serverIP;
 };
 

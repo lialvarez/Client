@@ -14,7 +14,7 @@
 #define CONNECTION_PORT 69		//puerto TFTP
 #define PACKAGE_MAX_SIZE 516	
 
-typedef char _BYTE;
+typedef char MYBYTE;
 
 typedef enum { RRQ_OP = 1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP }opCodes;
 typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
@@ -29,10 +29,13 @@ public:
 	void sendData(FILE *filePointer, unsigned int blockNumber);
 	void sendAck(unsigned int blockNumber = 0);
 	void sendError(std::string errorMsg, unsigned int errorCode);
-	void receivePackage();
+	bool receivePackage();
+	bool connectionLost();
+	MYBYTE *getInputPackage();
 	errorCodes getErrorCode();
 	std::string getData();
 	std::string getErrorMsg();
+	unsigned int getBlockNumber();
 
 	void callback1(const boost::system::error_code& error, std::size_t transfered_bytes);
 	void callback2(const boost::system::error_code& error, std::size_t transfered_bytes);
@@ -76,8 +79,8 @@ private:
 	errorCodes errorCode;
 	unsigned int blockNumber;
 
-	_BYTE *inputPackage;
-	_BYTE *outputPackage;
+	MYBYTE *inputPackage;
+	MYBYTE *outputPackage;
 	
 	bool packageArrived;
 };

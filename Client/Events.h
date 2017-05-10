@@ -84,8 +84,7 @@ private:
 class EV_Ack : public genericEvent
 {
 public:
-	EV_Ack() { ev = ACK; };
-
+	EV_Ack(unsigned int _blockNumber) :blockNumber(_blockNumber) { ev = ACK; };
 private:
 	unsigned int blockNumber;
 };
@@ -93,10 +92,11 @@ private:
 class EV_Error : public genericEvent
 {
 public:
-	EV_Error() { ev = ERRO; };
+	EV_Error(unsigned int _errorCode, std::string _errorMsg) :errorCode(_errorCode), errorMsg(_errorMsg) { ev = ERRO; };
 
 private:
-
+	unsigned int errorCode;
+	std::string errorMsg;
 };
 
 class EV_WRQ : public genericEvent
