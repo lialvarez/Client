@@ -1,15 +1,15 @@
 #ifndef PACKAGES_H
 #define PACKAGES_H
 #include <string>
+
 typedef char MYBYTE;
-typedef enum{RRQ_OP = 1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP}opCode;
 
 class genericPackage
 {
 public:
 	MYBYTE *package;
 	virtual void setPackage() {}
-	opCode code;
+	opCodes code;
 };
 
 class ReadRequest :public genericPackage
@@ -40,10 +40,10 @@ public:
 	void setPackage();
 };
 
-class Acknowledgment :public genericPackage
+class Acknowledge :public genericPackage
 {
 public:
-	Acknowledgment(unsigned int _blockNumber) :blockNumber(_blockNumber) { code = ACK_OP; }
+	Acknowledge(unsigned int _blockNumber) :blockNumber(_blockNumber) { code = ACK_OP; }
 	unsigned int blockNumber;
 	void setPackage();
 };

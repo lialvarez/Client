@@ -19,14 +19,16 @@
 class NetworkEventSource : public genericEventSource
 {
 public:
-	NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface){}
+	NetworkEventSource(Networking *_networkInterface);
 	bool isThereEvent();
 	genericEvent* insertEvent();
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
 	Networking *networkInterface;
 	genericPackage *pkg;
+	unsigned int expectedBlockNum;
 private:
+
 	std::string serverIP;
 };
 

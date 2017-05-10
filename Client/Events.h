@@ -1,6 +1,7 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
+#include "Packages.h"
 #include "Networking.h"	//Para el tipo de dato _BYTE
 #include "genericEvent.h"
 
@@ -9,14 +10,21 @@
 class EV_Put :public genericEvent
 {
 public:
-	EV_Put(std::string selectedFile) { ev = PUT; this->selectedFile = selectedFile; }
+	EV_Put(std::string selectedFile) {
+		ev = PUT; this->selectedFile = selectedFile; WRQPkg = new WriteRequest(selectedFile, "octet"); WRQPkg->setPackage();
+	}
+	EV_Put() { delete WRQPkg; }
+	WriteRequest *WRQPkg;
 private:
 };
 
 class EV_Get : public genericEvent
 {
 public:
-	EV_Get(std::string selectedFile) { ev = GET; this->selectedFile = selectedFile; };
+	EV_Get(std::string selectedFile) { 
+		ev = GET; this->selectedFile = selectedFile; RRQPkg = new ReadRequest(selectedFile, "octet"); RRQPkg->setPackage();
+	};
+	ReadRequest *RRQPkg;
 private:
 };
 
@@ -73,49 +81,26 @@ private:
 class EV_Data : public genericEvent
 {
 public:
-	EV_Data(std::string _data): data(_data) { ev = DATA; };
+	EV_Data(Data *_dataPkg) :dataPkg(_dataPkg) { ev = DATA; };
+	Data *dataPkg;
 	//TODO: funciones de cargar el buffer y de obetener la info
 private:
-	std::string data;
-	unsigned int blockNumber;	//Guardar el numero de bloque aca.
-	_BYTE* dataBuffer;
 };
 
 class EV_Ack : public genericEvent
 {
 public:
-	EV_Ack(unsigned int _blockNumber) :blockNumber(_blockNumber) { ev = ACK; };
+	EV_Ack(Acknowledge *_ackPkg) :ackPkg(_ackPkg) { ev = ACK; };
+	Acknowledge *ackPkg;
 private:
-	unsigned int blockNumber;
 };
 
 class EV_Error : public genericEvent
 {
 public:
-	EV_Error(unsigned int _errorCode, std::string _errorMsg) :errorCode(_errorCode), errorMsg(_errorMsg) { ev = ERRO; };
-
+	EV_Error(Error *_errorPkg) :errorPkg(_errorPkg) { ev = ERRO; };
+	Error *errorPkg;
 private:
-	unsigned int errorCode;
-	std::string errorMsg;
-};
-
-class EV_WRQ : public genericEvent
-{
-public:
-	EV_WRQ() { ev = WRQ; };
-
-private:
-	std::string fileToTransfer;
-}; 
-
-class EV_RRQ : public genericEvent
-{
-public:
-	EV_RRQ() { ev = RRQ; };
-
-private:
-	std::string fileToTransfer;
-
 };
 
 //SOFTWARE EVENTS

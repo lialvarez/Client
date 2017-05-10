@@ -6,6 +6,10 @@
 #include <boost\date_time\posix_time\posix_time.hpp>
 
 /*****  NETWORK EVENT SOURCE  *****/
+NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface) 
+{
+	serverIP = networkInterface->getServerAddres();
+}
 
 bool NetworkEventSource::isThereEvent()
 { 
@@ -14,15 +18,22 @@ bool NetworkEventSource::isThereEvent()
 	unsigned int errorCode;
 	std::string data;
 	unsigned int blockNumber;
-	if (!networkInterface->connectionLost())	//esta funcion hay que armarla, verifica que haya conexion
+	
+	if (networkInterface->receivePackage())	//verifica si se recibio algo
 	{
-		if (networkInterface->receivePackage())	//verifica si se recibio algo
+		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
 		{
-			switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
+		case DATA_OP:
+			data = (char *)networkInterface->getInputPackage()[4];
+			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
 			{
-			case DATA_OP:
-				data = (char *)networkInterface->getInputPackage()[4];
-				blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
+				ret = true;
+				evCode = ERRO;
+			}
+			else
+			{
 				pkg = new Data(data, blockNumber);
 				ret = true;
 				if (data.length < 512)
@@ -33,30 +44,33 @@ bool NetworkEventSource::isThereEvent()
 				{
 					evCode = DATA;
 				}
-				break;
-			case ACK_OP:
-				blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
-				pkg = new Acknowledgment(blockNumber);
-				ret = true;
-				evCode = ACK;
-				break;
-			case ERROR_OP:
-				errorCode = networkInterface->getInputPackage()[2];
-				errorMsg = (char *)networkInterface->getInputPackage()[4];
-				pkg = new Error(errorCode, errorMsg);
+			}
+			break;
+		case ACK_OP:
+			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
+			{
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
 				ret = true;
 				evCode = ERRO;
-				break;
-			default:
-				break;
 			}
+			else
+			{
+				pkg = new Acknowledge(blockNumber);
+				ret = true;
+				evCode = ACK;
+			}
+			break;
+		case ERROR_OP:
+			errorCode = networkInterface->getInputPackage()[2];
+			errorMsg = (char *)networkInterface->getInputPackage()[4];
+			pkg = new Error(errorCode, errorMsg);
+			ret = true;
+			evCode = ERRO;
+			break;
+		default:
+			break;
 		}
-	}
-	else
-	{	
-		//Si se perdio la conexion, indico que el evento es del tipo connection_fail
-		ret = true;	
-		evCode = CONNECTION_FAIL;
 	}
 	return ret;
 }
@@ -78,16 +92,19 @@ genericEvent * NetworkEventSource::insertEvent()
 	switch (evCode)
 	{
 	case DATA:
-		ret = (genericEvent *) new EV_Data(networkInterface->getData());
+		pkg = new Data(networkInterface->getData(), networkInterface->getBlockNumber());
+		ret = (genericEvent *) new EV_Data((Data *)pkg);
 		break;
 	case CONNECTION_FAIL:
 		ret = (genericEvent *) new EV_ConnectionFailed();
 		break;
 	case ACK:
-		ret = (genericEvent *) new EV_Ack(networkInterface->getBlockNumber());
+		pkg = new Acknowledge(networkInterface->getBlockNumber());
+		ret = (genericEvent *) new EV_Ack((Acknowledge *)pkg);
 		break;
 	case ERRO:
-		ret = (genericEvent *) new EV_Error(networkInterface->getErrorCode(), networkInterface->getErrorMsg());
+		pkg = new Error(networkInterface->getErrorCode(), networkInterface->getErrorMsg());
+		ret = (genericEvent *) new EV_Error((Error *)pkg);
 		break;
 	default:
 		break;

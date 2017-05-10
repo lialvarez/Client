@@ -5,19 +5,20 @@
 
 #define SAVE_DIR	"Download/"
 
+typedef enum { READ, WRITE }openMode;
+
 class FileSystem
 {
 public:
-	FileSystem();
-	~FileSystem();
 
+	void closeFile();
+	void openFile(std::string fileName, openMode mode);
 	bool saveData(std::string data);
 	std::string readData();
 	
 private:
 	
-	FILE *filePointer;
-
+	std::fstream fileStream;
 };
 
 #endif // !FILESYSTEM_H

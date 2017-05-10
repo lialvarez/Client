@@ -19,7 +19,7 @@ void WriteRequest::setPackage()
 	strcpy((char *)package[(fileName.length() + 1) + 2], mode.c_str());
 }
 
-void Acknowledgment::setPackage()
+void Acknowledge::setPackage()
 {
 	package = new MYBYTE[4];
 	package[0] = 0x00;

@@ -3,7 +3,7 @@
 
 #include <string>
 #include "eventSources.h"
-
+#include "FileSystem.h"
 class usefulInfo
 {
 public:
@@ -22,6 +22,10 @@ public:
 
 	Networking *networkInterface;
 	Screen  *userInterface;
+	FileSystem *fileInterface;
+	
+	genericPackage *nextPkg;
+	genericPackage *lastPkg;
 
 	genericEvent* eventBuffer;	//TODO: implementar un buffer posta
 
