@@ -12,7 +12,6 @@
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-
 class NetworkEventSource : public genericEventSource
 {
 public:
