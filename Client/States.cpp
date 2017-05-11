@@ -1,6 +1,5 @@
 #include "States.h"
 #include "Screen.h"
-#include "Events.h"
 #include <fstream>
 #include <sstream>
 
@@ -9,8 +8,8 @@
 genericState *ST_Idle::on_Put(EV_Put *ev, usefulInfo *Info)
 {
 	Info->networkSrc->expectedBlockNum = 0;	//Setea el block number que deberia tener el proximo ACK
-	Info->fileInterface->openFile(ev->getSelectedFile(), READ);	//Abre el archivo y guarda el puntero al mismo en Info.
-	Info->networkSrc->networkInterface->sendPackage(ev->WRQPkg);	//Funcion que envia el WRQ con el nombre del archivo
+	Info->fileInterface->openFile(ev->getSelectedFile(), READ);	//Abre el archivo en el modo indicado
+	Info->networkInterface->sendPackage(ev->WRQPkg);	//Funcion que envia el WRQ con el nombre del archivo
 	Info->lastPkg = new WriteRequest(*ev->WRQPkg);	//Copia el ultimo paquete enviado
 	Info->timeoutSrc->startTimer();	//Inicia el timer
 	genericState *ret = (genericState *) new ST_ReceiveFirstAck();
@@ -74,16 +73,22 @@ genericState * ST_ReceiveFirstAck::on_Ack(EV_Ack * ev, usefulInfo *Info)
 {
 	//Recibo el Ack y tengo que empezar a enviar la data
 	Info->networkSrc->expectedBlockNum++;
-	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
-	Info->networkInterface->sendPackage(Info->nextPkg);
+	delete Info->nextPkg;
+	Info->nextPkg =(Data *) new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);	//Armo el paquete a enviar
+	Info->networkInterface->sendPackage((Data *)Info->nextPkg);
+	
+	delete Info->lastPkg;
+
 	Info->timeoutSrc->startTimer();		//Resetear Timer
 	return (genericState*) new ST_ReceiveAck;
 }
 
 genericState * ST_ReceiveFirstAck::on_Error(EV_Error * ev, usefulInfo *Info)
 {
-	Info->closeFile();	//Cerrar el archivo
+	Info->fileInterface->closeFile();	//Cerrar el archivo
 	Info->timeoutSrc->stopTimer();	//Detener el timer
+	delete Info->lastPkg;
+	Info->userInterface->errorMsg((errorCodes)ev->errorPkg->errorCode, ev->errorPkg->errorMsg);
 	genericState *ret = (genericState *) new ST_Idle;
 	//Hay que limpiar el buffer de eventos tambien, quizas verificando fuera de la FSM si last Event fue ERROR
 	ret->setLastEvent(ERRO);	//Setear el ultimo evento en Error para resetear la FSM
@@ -97,25 +102,29 @@ genericState * ST_ReceiveFirstAck::on_Timeout(EV_Timeout * ev, usefulInfo *Info)
 	return nullptr;
 }
 
-genericState * ST_ReceiveFirstAck::on_ConnectionFailed(EV_ConnectionFailed * ev)
+genericState * ST_ReceiveFirstAck::on_ConnectionFailed(EV_ConnectionFailed * ev, usefulInfo *Info)
 {
 	//y aca qe verga hacemo? //TODO
 	//yo diria que deberiamos salir a reintentar conectar
+	Info->closeFile();
 	return nullptr;
 }
 
 
 //ST_ReceiveAck
-genericState * ST_ReceiveAck::on_Ack(genericEvent * ev, usefulInfo *Info)
+genericState * ST_ReceiveAck::on_Ack(EV_Ack * ev, usefulInfo *Info)
 {
-	Info->blockNumber++;	//Incrementa el numero de bloque
-	Info->networkSrc->networkInterface->sendData(Info->getFilePointer(), Info->blockNumber);	//Se envia el siguiente bloque
+	Info->networkSrc->expectedBlockNum++;	//Incrementa el numero de bloque
+	delete Info->nextPkg;
+	Info->nextPkg = new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);
+	Info->networkSrc->networkInterface->sendPackage(Info->nextPkg);	//Se envia el siguiente bloque
 	Info->timeoutSrc->startTimer();	//Inicia el timer
 	return nullptr;
 }
 
-genericState * ST_ReceiveAck::on_Error(genericEvent * ev)
+genericState * ST_ReceiveAck::on_Error(EV_Error * ev)
 {
+	
 	genericState *ret = (genericState*) new ST_Idle;
 	ret->setLastEvent(ERRO);
 	return ret;

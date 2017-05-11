@@ -1,6 +1,7 @@
 #ifndef STATES_H
 #define STATES_H
 
+#include "Events.h"
 #include "eventSources.h"
 #include "genericState.h"
 
@@ -29,7 +30,7 @@ public:
 	genericState* on_Ack(EV_Ack* ev, usefulInfo *Info);
 	genericState* on_Error(EV_Error* ev, usefulInfo *Info);
 	genericState* on_Timeout(EV_Timeout* ev, usefulInfo *Info);
-	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev);
+	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev, usefulInfo *Info);
 
 	std::string getSelectedFile() { return fileToTransfer; }
 	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }

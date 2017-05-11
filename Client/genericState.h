@@ -1,5 +1,6 @@
 #ifndef GENERICSTATE_H
 #define GENERICSTATE_H
+
 #include "usefulInfo.h"
 #include "genericEvent.h"
 
@@ -21,7 +22,7 @@ public:
 	virtual genericState* on_Error(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_WRQ(genericEvent* ev) { return nullptr; }
 	virtual genericState* on_RRQ(genericEvent *ev) { return nullptr; }
-	virtual genericState* on_ConnectionFailed(genericEvent* ev) { return nullptr; }
+	virtual genericState* on_ConnectionFailed(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_LastData(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_Timeout(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 

@@ -89,3 +89,24 @@ void Screen::fileREceiveEnd(std::string fileName)
 	refresh();
 	setCommandLine();
 }
+
+void Screen::errorMsg(errorCodes code, std::string errorMsg)
+{
+	switch (code)
+	{
+	case NOT_DEFINED:
+		printw("\nError: Not defined error\nError message:"); printw(errorMsg.c_str());
+		refresh();
+		break;
+	case FILE_NOT_FOUND:
+		printw("\nError: The requested file was not found");
+		refresh();
+		break;
+	case FILE_ALREADY_EXISTS:
+		printw("\nError: Selected file already exists");
+		refresh();
+		break;
+	default:
+		break;
+	}
+}

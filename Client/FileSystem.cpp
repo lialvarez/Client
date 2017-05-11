@@ -27,5 +27,8 @@ std::string FileSystem::readData()
 
 void FileSystem::closeFile()
 {
-	fileStream.close();
+	if (fileStream.is_open())
+	{
+		fileStream.close();
+	}
 }

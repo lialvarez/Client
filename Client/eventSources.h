@@ -14,7 +14,8 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <ctime>
 
-#define ONE_MINUTE 60
+#define ONE_MINUTE		60
+#define MAX_TIMEOUTS	5
 
 class NetworkEventSource : public genericEventSource
 {
@@ -63,6 +64,7 @@ public:
 	genericEvent* insertEvent();
 private:
 	clock_t tInicial;
+	unsigned int timeoutsCount;
 	bool timeout;	//Si está en true se cumplió el tiempo.
 	bool timerRunning;
 };

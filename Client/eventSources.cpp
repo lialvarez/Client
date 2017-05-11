@@ -305,6 +305,7 @@ TimeoutEventSource::TimeoutEventSource()
 {
 	timeout = false;
 	timerRunning = false;
+	timeoutsCount = 0;
 }
 
 bool TimeoutEventSource::isThereEvent()
@@ -313,7 +314,15 @@ bool TimeoutEventSource::isThereEvent()
 	{
 		timeout = true;
 		timerRunning = false;
-		evCode = TIMEOUT;
+		timeoutsCount++;
+		if (timeoutsCount == MAX_TIMEOUTS)
+		{
+			evCode = CONNECTION_FAIL;
+		}
+		else
+		{
+			evCode = TIMEOUT;
+		}
 	}
 	else
 	{
@@ -329,6 +338,7 @@ void TimeoutEventSource::startTimer()
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 	tInicial = clock();
 	timerRunning = true;
+	timeoutsCount = 0;
 }
 
 genericEvent * TimeoutEventSource::insertEvent()
@@ -339,6 +349,9 @@ genericEvent * TimeoutEventSource::insertEvent()
 	{
 	case TIMEOUT:
 		ret = (genericEvent *) new EV_Timeout;
+		break;
+	case CONNECTION_FAIL:
+		ret = (genericEvent *) new EV_ConnectionFailed;
 		break;
 	default:
 		break;

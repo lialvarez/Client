@@ -1,10 +1,5 @@
 #include "eventGenerator.h"
 
-eventGenerator::eventGenerator(usefulInfo* _I):buffer(16)
-{
-	I = _I;
-}
-
 void eventGenerator::generateEvent()
 {
 
@@ -23,11 +18,12 @@ void eventGenerator::generateEvent()
 	//	buffer.push_back(I->timeout->insertEvent());
 	//}
 
-	if (I->user->isThereEvent())
+	if (I->userSrc->isThereEvent())
 	{
-		buffer.push_back(I->user->insertEvent());
+		buffer.push_back(I->userSrc->insertEvent());
 	}		
 }
+
 genericEvent * eventGenerator::getNextEvent()
 {
 	genericEvent * ret;
@@ -41,4 +37,9 @@ genericEvent * eventGenerator::getNextEvent()
 		ret = nullptr;	//Si no hay eventos en el buffer devuelve nullptr
 	}
 	return ret;
+}
+
+void eventGenerator::clearBuffer()
+{
+	buffer.clear();
 }

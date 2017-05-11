@@ -26,15 +26,7 @@ public:
 	
 	genericPackage *nextPkg;
 	genericPackage *lastPkg;
-
-	genericEvent* eventBuffer;	//TODO: implementar un buffer posta
-
-	void closeFile() { fclose(filePointer); }
-	void setFilePointer(std::string fileName) { filePointer = fopen(fileName.c_str(), "rb"); }
-	FILE *getFilePointer() { return filePointer; }
-	unsigned int blockNumber;
 private:
-	FILE *filePointer;
 	std::string serverAddress;
 
 };

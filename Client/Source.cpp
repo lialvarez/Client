@@ -36,18 +36,7 @@ int main(int argc, char *argv[])
 	unsigned int connectAttempt = 0;
 	do
 	{
-		//do
-		//{
-		//	//conectar()
-		//	//Seguramente va a haber que manejar una excepcion si no logra conecatarse
-		//	connectAttempt++;
-		//} while (connectAttempt < MAX_ATTEMPT && /*connection failed*/);	//Intento conectar un numero maximo de intentos
-		//connectAttempt = 0;	//Reseteo el connect attempt
-		//
-		//if (/*connection failed*/)	//Si no hay conexion salgo del programa
-		//{
-		//	//Salir del programa, no se pudo establecer conexion
-		//}
+		Network.startConnection();
 
 		do //Si hay conexion, entro en la FSM
 		{
@@ -60,6 +49,7 @@ int main(int argc, char *argv[])
 			}
 
 		} while (FSM.getCurrentState()->getLastEvent() != QUIT);
+		evGen.clearBuffer();
 
 	} while (FSM.getCurrentState()->getLastEvent() != QUIT);
 	
