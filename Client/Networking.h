@@ -43,8 +43,6 @@ private:
 	boost::asio::ip::tcp::resolver* clientResolver;
 	boost::asio::ip::tcp::resolver::iterator endpoint;
 
-	void packageSET(opCodes opCode, unsigned int blockNumber = 0, FILE *filePointer = NULL);
-
 	void packageDecode();
 
 	std::string serverAddress;
@@ -58,6 +56,5 @@ private:
 
 	MYBYTE *inputPackage;
 	MYBYTE *outputPackage;
-	
 };
 #endif // !NETWORKING_H

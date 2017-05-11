@@ -11,6 +11,7 @@ Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress
 	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
 }
 
+
 Networking::~Networking()
 {
 	clientSocket->close();
@@ -20,6 +21,7 @@ Networking::~Networking()
 	delete IO_handler;
 }
 
+
 void Networking::startConnection()
 {
 	endpoint = clientResolver->resolve(
@@ -28,15 +30,18 @@ void Networking::startConnection()
 	clientSocket->non_blocking(true);
 }
 
+
 std::string Networking::getServerAddres()
 {
 	return serverAddress;
 }
 
+
 unsigned int Networking::getBlockNumber()
 {
 	return blockNumber;
 }
+
 
 void Networking::packageDecode()
 {
@@ -59,82 +64,36 @@ void Networking::packageDecode()
 	}
 }
 
+
 errorCodes Networking::getErrorCode()
 {
 	return errorCode;
 }
+
 
 std::string Networking::getErrorMsg()
 {
 	return errorMsg;
 }
 
+
 std::string Networking::getData()
 {
 	return data;
 }
 
-//Esta funcion ya no va
-void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FILE *filePointer /*= NULL*/)
-{	
-	std::string mode("octet");
-	switch (opCode)
-	{
-	case RRQ_OP:
-		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		outputPackage[0] = 0x00;
-		outputPackage[1] = (MYBYTE)RRQ_OP;
-		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
-		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
-		break;
-	case WRQ_OP:
-		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		outputPackage[0] = 0x00;
-		outputPackage[1] = (MYBYTE)WRQ_OP;
-		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
-		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
-		break;
-	case DATA_OP:
-		char auxBuffer[512];
-		unsigned int bytesToSend = fread(auxBuffer, 1, 512, filePointer);	//cuenta los bytes a enviar
-		outputPackage = new MYBYTE[bytesToSend + 4];
-		outputPackage[0] = 0x00;
-		outputPackage[1] = (MYBYTE)DATA_OP;
-		outputPackage[2] = (blockNumber & 0xFF00)>>8;
-		outputPackage[3] = (blockNumber & 0x00FF);
-		strcpy((char *)outputPackage + 4, auxBuffer);
-		break;
-	case ACK_OP:
-		outputPackage = new MYBYTE[4];
-		outputPackage[0] = 0x00;
-		outputPackage[1] = (MYBYTE)ACK_OP;
-		outputPackage[2] = (blockNumber & 0xFF00) >> 8;
-		outputPackage[3] = (blockNumber & 0x00FF);
-		break;
-	case ERROR_OP:
-		outputPackage = new MYBYTE[errorMsg.length() + 5];
-		outputPackage[0] = 0x00;
-		outputPackage[1] = (MYBYTE)ERROR_OP;
-		outputPackage[2] = 0x00;
-		outputPackage[3] = (MYBYTE)errorCode;
-		strcpy((char *)outputPackage + 4, errorMsg.c_str());
-		break;
-	default:
-		break;
-	}
-}
 
 void Networking::sendPackage(genericPackage *Pkg)
 {
 	Pkg->setPackage();
 
-	char buf[PACKAGE_MAX_SIZE] = "Hello from server.";
+	//char buf[PACKAGE_MAX_SIZE] = "Hello from server."; //esto se borra
 
 	size_t len;
 	boost::system::error_code error;
 
 	do
-	{
+	{													//en vez de buf, pasarle un puntero a package
 		len = clientSocket->write_some(boost::asio::buffer(buf, packageSize), error); //declarar y hacer una funcion que ponga packageSize
 	} while ((error.value() == WSAEWOULDBLOCK));
 	if (error)
