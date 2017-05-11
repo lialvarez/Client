@@ -5,24 +5,31 @@
 #include <vector>
 #include <fstream>
 #include <boost\asio.hpp>
+#include "Packages.h"
 #include "Screen.h"
 #include "Networking.h"
 #include "genericEventSource.h"
 #include <boost\asio\deadline_timer.hpp>
 #include <boost/bind.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <ctime>
+
+#define ONE_MINUTE		60
+#define MAX_TIMEOUTS	5
 
 class NetworkEventSource : public genericEventSource
 {
 public:
-	NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface){}
+	NetworkEventSource(Networking *_networkInterface);
 	bool isThereEvent();
 	genericEvent* insertEvent();
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
 	Networking *networkInterface;
+	genericPackage *pkg;
+	unsigned int expectedBlockNum;
 private:
-	
+
 	std::string serverIP;
 };
 
@@ -53,9 +60,11 @@ public:
 	TimeoutEventSource();
 	bool isThereEvent();
 	void startTimer();
+	void stopTimer();
 	genericEvent* insertEvent();
 private:
 	clock_t tInicial;
+	unsigned int timeoutsCount;
 	bool timeout;	//Si está en true se cumplió el tiempo.
 	bool timerRunning;
 };

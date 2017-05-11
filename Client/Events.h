@@ -1,6 +1,7 @@
 #ifndef EVENTS_H
 #define EVENTS_H
 
+#include "Packages.h"
 #include "Networking.h"	//Para el tipo de dato _BYTE
 #include "genericEvent.h"
 
@@ -9,23 +10,22 @@
 class EV_Put :public genericEvent
 {
 public:
-	EV_Put(Screen *terminal) { ev = PUT; this->terminal = terminal; };
-	Screen *terminal;
-	std::string getSelectedFile() { return fileToTransfer; }	//getter del nombre del archivo
-	void setSelectedFile(std::string selectedFile) { fileToTransfer = selectedFile; }	//setter del nombre del archivo
+	EV_Put(std::string selectedFile) {
+		ev = PUT; this->selectedFile = selectedFile; WRQPkg = new WriteRequest(selectedFile, "octet"); WRQPkg->setPackage();
+	}
+	EV_Put() { delete WRQPkg; }
+	WriteRequest *WRQPkg;
 private:
-	std::string fileToTransfer;
 };
 
 class EV_Get : public genericEvent
 {
 public:
-	EV_Get(Screen *terminal) { ev = GET; };
-	Screen *terminal;
-	std::string getSelectedFile() { return fileToTransfer; }	//getter del nombre del archivo
-	void setSelectedFile(std::string selectedFile) { fileToTransfer = selectedFile; }	//setter del nombre del archivo
+	EV_Get(std::string selectedFile) { 
+		ev = GET; this->selectedFile = selectedFile; RRQPkg = new ReadRequest(selectedFile, "octet"); RRQPkg->setPackage();
+	};
+	ReadRequest *RRQPkg;
 private:
-	std::string fileToTransfer;
 };
 
 class EV_Quit : public genericEvent
@@ -39,8 +39,7 @@ private:
 class EV_Help : public genericEvent
 {
 public:
-	EV_Help(Screen *terminal) { ev = HELP; this->terminal = terminal; };
-	Screen *terminal;
+	EV_Help() { ev = HELP; };
 private:
 
 };
@@ -48,8 +47,7 @@ private:
 class EV_Clear : public genericEvent
 {
 public:
-	EV_Clear(Screen *terminal) { ev = CLEAR; this->terminal = terminal; };
-	Screen *terminal;
+	EV_Clear() { ev = CLEAR; };
 private:
 
 };
@@ -57,8 +55,7 @@ private:
 class EV_EmptyCommand : public genericEvent
 {
 public:
-	EV_EmptyCommand(Screen *terminal) { ev = EMPTY_COMMAND; this->terminal = terminal; }
-	Screen *terminal;
+	EV_EmptyCommand() { ev = EMPTY_COMMAND; }
 private:
 
 };
@@ -66,21 +63,15 @@ private:
 class EV_FileError : public genericEvent
 {
 public:
-	EV_FileError(Screen *terminal) { ev = FILE_ERROR; this->terminal = terminal; };
-	Screen *terminal;
-	std::string getFileNotFound() { return fileNotFound; }
-	void setFileNotFound(std::string fileNotFound) { this->fileNotFound = fileNotFound; }
+	EV_FileError(std::string slectedFile) { ev = FILE_ERROR; this->selectedFile = selectedFile; }
 private:
-	std::string fileNotFound;
 };
 
 class EV_InvalidCommand : public genericEvent
 {
 public:
-	EV_InvalidCommand(Screen *terminal) { ev = INVALID; this->terminal = terminal; };
-	Screen *terminal;
+	EV_InvalidCommand(std::string command) :invalidCommand(command) { ev = INVALID; };
 	std::string getInvalidCommand() { return invalidCommand; };
-	void setInvalidCommand(std::string invalidCommand) { this->invalidCommand = invalidCommand; }
 private:
 	std::string invalidCommand;
 };
@@ -90,49 +81,26 @@ private:
 class EV_Data : public genericEvent
 {
 public:
-	EV_Data() { ev = DATA; };
+	EV_Data(Data *_dataPkg) :dataPkg(_dataPkg) { ev = DATA; };
+	Data *dataPkg;
 	//TODO: funciones de cargar el buffer y de obetener la info
-
 private:
-	unsigned int blockNumber;	//Guardar el numero de bloque aca.
-	_BYTE* dataBuffer;
 };
 
 class EV_Ack : public genericEvent
 {
 public:
-	EV_Ack() { ev = ACK; };
-
+	EV_Ack(Acknowledge *_ackPkg) :ackPkg(_ackPkg) { ev = ACK; };
+	Acknowledge *ackPkg;
 private:
-	unsigned int blockNumber;
 };
 
 class EV_Error : public genericEvent
 {
 public:
-	EV_Error() { ev = ERRO; };
-
+	EV_Error(Error *_errorPkg) :errorPkg(_errorPkg) { ev = ERRO; };
+	Error *errorPkg;
 private:
-
-};
-
-class EV_WRQ : public genericEvent
-{
-public:
-	EV_WRQ() { ev = WRQ; };
-
-private:
-	std::string fileToTransfer;
-}; 
-
-class EV_RRQ : public genericEvent
-{
-public:
-	EV_RRQ() { ev = RRQ; };
-
-private:
-	std::string fileToTransfer;
-
 };
 
 //SOFTWARE EVENTS

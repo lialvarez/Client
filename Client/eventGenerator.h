@@ -11,9 +11,10 @@
 class eventGenerator
 {
 public:
-	eventGenerator(usefulInfo* _I);
+	eventGenerator(usefulInfo* _I) :buffer(16), I(_I){}
 	void generateEvent();
 	genericEvent* getNextEvent();
+	void clearBuffer();
 
 protected:
 

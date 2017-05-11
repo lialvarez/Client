@@ -11,6 +11,8 @@
 
 #define HELP_FILE		"resources/Help.txt"
 
+typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
+
 class Screen
 {
 public:
@@ -22,6 +24,7 @@ public:
 	void outputInvalid(std::string command);
 	void setCommandLine();
 	void resetTerminal();
+	void errorMsg(errorCodes code, std::string errorMsg = 0);
 	void fileErrorMsg(std::string fileName);
 	void fileSendEnd(std::string fileName);
 	void fileREceiveEnd(std::string fileName);

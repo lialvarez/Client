@@ -11,7 +11,7 @@ class genericEvent
 public:
 	genericEvent() { ev = NO_EV; }//por default, se setea el tipo de evento en NO_EV. Si otra clase hereda genericEvent, puede cambiar el constructor para setear el evento como el que corresponda
 	eventCode getEventType() { return ev; }	//getter del tipo de evento
-
+	std::string getSelectedFile() { return selectedFile; }
 protected:
 	std::string selectedFile;
 	eventCode ev;

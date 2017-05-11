@@ -6,12 +6,74 @@
 #include <boost\date_time\posix_time\posix_time.hpp>
 
 /*****  NETWORK EVENT SOURCE  *****/
+NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkInterface(_networkInterface) 
+{
+	serverIP = networkInterface->getServerAddres();
+}
 
 bool NetworkEventSource::isThereEvent()
 { 
+	bool ret = false;
+	std::string errorMsg;
+	unsigned int errorCode;
+	std::string data;
+	unsigned int blockNumber;
 	
-	return false;
-} //MALE: esta es la funcion que lee lo que le envian por red
+	if (networkInterface->receivePackage())	//verifica si se recibio algo
+	{
+		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
+		{
+		case DATA_OP:
+			data = (char *)networkInterface->getInputPackage()[4];
+			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
+			{
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
+				ret = true;
+				evCode = ERRO;
+			}
+			else
+			{
+				pkg = new Data(data, blockNumber);
+				ret = true;
+				if (data.length < 512)
+				{
+					evCode = LAST_DATA;
+				}
+				else
+				{
+					evCode = DATA;
+				}
+			}
+			break;
+		case ACK_OP:
+			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			if (blockNumber != expectedBlockNum)
+			{
+				pkg = new Error(NOT_DEFINED, "Block number conflict");
+				ret = true;
+				evCode = ERRO;
+			}
+			else
+			{
+				pkg = new Acknowledge(blockNumber);
+				ret = true;
+				evCode = ACK;
+			}
+			break;
+		case ERROR_OP:
+			errorCode = networkInterface->getInputPackage()[2];
+			errorMsg = (char *)networkInterface->getInputPackage()[4];
+			pkg = new Error(errorCode, errorMsg);
+			ret = true;
+			evCode = ERRO;
+			break;
+		default:
+			break;
+		}
+	}
+	return ret;
+}
 
 void NetworkEventSource::setServerIP(std::string _serverIP)
 {
@@ -23,7 +85,6 @@ std::string NetworkEventSource::getServerIP()
 	return serverIP;
 }
 
-//HAY QUE COMPLETAR ESTO
 genericEvent * NetworkEventSource::insertEvent()
 {
 	genericEvent * ret;
@@ -31,12 +92,19 @@ genericEvent * NetworkEventSource::insertEvent()
 	switch (evCode)
 	{
 	case DATA:
+		pkg = new Data(networkInterface->getData(), networkInterface->getBlockNumber());
+		ret = (genericEvent *) new EV_Data((Data *)pkg);
 		break;
 	case CONNECTION_FAIL:
+		ret = (genericEvent *) new EV_ConnectionFailed();
 		break;
 	case ACK:
+		pkg = new Acknowledge(networkInterface->getBlockNumber());
+		ret = (genericEvent *) new EV_Ack((Acknowledge *)pkg);
 		break;
 	case ERRO:
+		pkg = new Error(networkInterface->getErrorCode(), networkInterface->getErrorMsg());
+		ret = (genericEvent *) new EV_Error((Error *)pkg);
 		break;
 	default:
 		break;
@@ -202,33 +270,25 @@ genericEvent * UserEventSource::insertEvent()
 	switch (evCode)
 	{
 	case PUT:
-		ret = (genericEvent *) new EV_Put(terminal);
-		castedEvP = (EV_Put *)ret;
-		castedEvP->setSelectedFile(command);
+		ret = (genericEvent *) new EV_Put(fileToTransfer);
 		break;
 	case GET:
-		ret = (genericEvent *) new EV_Get(terminal);
-		castedEvG = (EV_Get *)ret;
-		castedEvG->setSelectedFile(command);
+		ret = (genericEvent *) new EV_Get(fileToTransfer);
 		break;
 	case HELP:
-		ret = (genericEvent *) new EV_Help(terminal);
+		ret = (genericEvent *) new EV_Help();
 		break;
 	case CLEAR:
-		ret = (genericEvent *) new EV_Clear(terminal);
+		ret = (genericEvent *) new EV_Clear();
 		break;
 	case EMPTY_COMMAND:
-		ret = (genericEvent *) new EV_EmptyCommand(terminal);
+		ret = (genericEvent *) new EV_EmptyCommand();
 		break;
 	case INVALID:
-		ret = (genericEvent *) new EV_InvalidCommand(terminal);
-		castedEvIC = (EV_InvalidCommand *)ret;
-		castedEvIC->setInvalidCommand(command);
+		ret = (genericEvent *) new EV_InvalidCommand(command);
 		break;
 	case FILE_ERROR:
-		ret = (genericEvent *) new EV_FileError(terminal);
-		castedEvFE = (EV_FileError *)ret;
-		castedEvFE->setFileNotFound(fileToTransfer);
+		ret = (genericEvent *) new EV_FileError(fileToTransfer);
 		break;
 	case QUIT:
 		ret = (genericEvent *) new EV_Quit;
@@ -245,6 +305,7 @@ TimeoutEventSource::TimeoutEventSource()
 {
 	timeout = false;
 	timerRunning = false;
+	timeoutsCount = 0;
 }
 
 bool TimeoutEventSource::isThereEvent()
@@ -253,7 +314,15 @@ bool TimeoutEventSource::isThereEvent()
 	{
 		timeout = true;
 		timerRunning = false;
-		evCode = TIMEOUT;
+		timeoutsCount++;
+		if (timeoutsCount == MAX_TIMEOUTS)
+		{
+			evCode = CONNECTION_FAIL;
+		}
+		else
+		{
+			evCode = TIMEOUT;
+		}
 	}
 	else
 	{
@@ -263,13 +332,13 @@ bool TimeoutEventSource::isThereEvent()
 	return timeout;
 }
 
-
 void TimeoutEventSource::startTimer()
 
 {
 	timeout = false;	//Se setea la variable de control en false, indicando que no ha ocurrido timeout
 	tInicial = clock();
 	timerRunning = true;
+	timeoutsCount = 0;
 }
 
 genericEvent * TimeoutEventSource::insertEvent()
@@ -280,6 +349,9 @@ genericEvent * TimeoutEventSource::insertEvent()
 	{
 	case TIMEOUT:
 		ret = (genericEvent *) new EV_Timeout;
+		break;
+	case CONNECTION_FAIL:
+		ret = (genericEvent *) new EV_ConnectionFailed;
 		break;
 	default:
 		break;

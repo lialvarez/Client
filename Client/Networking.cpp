@@ -3,123 +3,120 @@
 #include <boost/bind.hpp>
 #include <conio.h>
 
+
 Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress)
 {
 	IO_handler = new boost::asio::io_service();
 	clientSocket = new boost::asio::ip::tcp::socket(*IO_handler);
 	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
-
-	packageArrived = false;
 }
-
-
 
 Networking::~Networking()
 {
-	delete IO_handler;
-	delete clientSocket;
+	clientSocket->close();
+
 	delete clientResolver;
+	delete clientSocket;
+	delete IO_handler;
 }
 
-//Esto esta comentado pq si pongo la definicion de la funcion en el .cpp tenemos un error.
-//Pusimos la definicion en el .h
-
-//void Networking::startConnection() 
-//{
-//
-//	bool exit;
-//
-//	endpoint = clientResolver->resolve(boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
-//
-//	do {
-//		exit = true;
-//		try {
-//			boost::asio::connect(*clientSocket, endpoint);
-//		}
-//		catch (const std::exception& e)
-//		{
-//			std::cout << "Waiting for server." << std::endl;
-//			exit = false;
-//		}
-//	} while (!exit);
-//}
-
-void Networking::sendWRQ(std::string fileToTransfer)
+void Networking::startConnection()
 {
-	this->fileToTransfer = fileToTransfer;
-	packageSET(WRQ_OP);
-	sendPackage();
+	endpoint = clientResolver->resolve(
+		boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
+	boost::asio::connect(*clientSocket, endpoint);
+	clientSocket->non_blocking(true);
 }
 
-void Networking::sendRRQ(std::string fileToTransfer)
+std::string Networking::getServerAddres()
 {
-	this->fileToTransfer = fileToTransfer;
-	packageSET(RRQ_OP);
-	sendPackage();
+	return serverAddress;
 }
 
-void Networking::sendData(FILE *filePointer, unsigned int blockNumber)
+unsigned int Networking::getBlockNumber()
 {
-	packageSET(DATA_OP, blockNumber, filePointer);
-	sendPackage();
+	return blockNumber;
 }
 
-void Networking::sendAck(unsigned int blockNumber /*= 0*/)
+void Networking::packageDecode()
 {
-	packageSET(ACK_OP, blockNumber);
-	sendPackage();
+	receivedPackageType = (opCodes)inputPackage[1];
+	switch (receivedPackageType)
+	{
+	case DATA_OP:
+		blockNumber = (inputPackage[2] << 8) + inputPackage[3];
+		data = inputPackage[4];
+		break;
+	case ACK_OP:
+		blockNumber = (inputPackage[2] << 8) + inputPackage[3];
+		break;
+	case ERROR_OP:
+		errorCode = (errorCodes)inputPackage[3];
+		errorMsg = inputPackage[4];
+		break;
+	default:
+		break;
+	}
 }
 
-void Networking::sendError(std::string errorMsg, unsigned int errorCode)
+errorCodes Networking::getErrorCode()
 {
-	this->errorCode = errorCode;
-	this->errorMsg = errorMsg;
-	packageSET(ERROR_OP);
-	sendPackage();
+	return errorCode;
 }
 
+std::string Networking::getErrorMsg()
+{
+	return errorMsg;
+}
+
+std::string Networking::getData()
+{
+	return data;
+}
+
+//Esta funcion ya no va
 void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FILE *filePointer /*= NULL*/)
 {	
 	std::string mode("octet");
 	switch (opCode)
 	{
 	case RRQ_OP:
-		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)1;
+		outputPackage[1] = (MYBYTE)RRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case WRQ_OP:
-		outputPackage = new _BYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
-		outputPackage[0] = 0;
-		outputPackage[1] = (_BYTE)2;
+		outputPackage = new MYBYTE[(mode.length() + 1) + (fileToTransfer.length() + 1) + 2];
+		outputPackage[0] = 0x00;
+		outputPackage[1] = (MYBYTE)WRQ_OP;
 		strcpy((char *)outputPackage + 2, fileToTransfer.c_str());
 		strcpy((char *)outputPackage + 2 + (fileToTransfer.length() + 1), mode.c_str());
 		break;
 	case DATA_OP:
 		char auxBuffer[512];
 		unsigned int bytesToSend = fread(auxBuffer, 1, 512, filePointer);	//cuenta los bytes a enviar
-		outputPackage = new _BYTE[bytesToSend + 4];
+		outputPackage = new MYBYTE[bytesToSend + 4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)3;
+		outputPackage[1] = (MYBYTE)DATA_OP;
 		outputPackage[2] = (blockNumber & 0xFF00)>>8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		strcpy((char *)outputPackage + 4, auxBuffer);
 		break;
 	case ACK_OP:
-		outputPackage = new _BYTE[4];
+		outputPackage = new MYBYTE[4];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)4;
+		outputPackage[1] = (MYBYTE)ACK_OP;
 		outputPackage[2] = (blockNumber & 0xFF00) >> 8;
 		outputPackage[3] = (blockNumber & 0x00FF);
 		break;
 	case ERROR_OP:
-		outputPackage = new _BYTE[errorMsg.length() + 5];
+		outputPackage = new MYBYTE[errorMsg.length() + 5];
 		outputPackage[0] = 0x00;
-		outputPackage[1] = (_BYTE)5;
+		outputPackage[1] = (MYBYTE)ERROR_OP;
 		outputPackage[2] = 0x00;
-		outputPackage[3] = (_BYTE)errorCode;
+		outputPackage[3] = (MYBYTE)errorCode;
 		strcpy((char *)outputPackage + 4, errorMsg.c_str());
 		break;
 	default:
@@ -127,56 +124,44 @@ void Networking::packageSET(opCodes opCode, unsigned int blockNumber /*= 0*/, FI
 	}
 }
 
-void Networking::sendPackage()
+void Networking::sendPackage(genericPackage *Pkg)
 {
-	std::cout << std::endl << "Sending package" << std::endl;
+	Pkg->setPackage();
 
 	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
 		boost::bind(&Networking::callback1, this,
 			boost::asio::placeholders::error,
 			boost::asio::placeholders::bytes_transferred));
 
-	boost::asio::async_write(*clientSocket, boost::asio::buffer(outputPackage, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
+	boost::asio::async_write(*clientSocket, boost::asio::buffer(Pkg->package, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
 }
 
-void Networking::callback1(const boost::system::error_code& error, std::size_t transfered_bytes) {
-}
-
-void Networking::receivePackage()
+bool Networking::receivePackage()
 {
+	bool ret = false;
 	boost::system::error_code error;
-	_BYTE emptyBuf[PACKAGE_MAX_SIZE] = { NULL };
-	_BYTE buf[PACKAGE_MAX_SIZE] = { NULL };			
-
-	std::cout << "Receiving package" << std::endl;
-
-	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
-		boost::bind(&Networking::callback2, this,
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
-
-	async_read(*clientSocket, boost::asio::buffer(buf, PACKAGE_MAX_SIZE), handler);		// Si recibe algo, lo guarda en buf.
-	
-
-
-	if (strcmp(buf, emptyBuf))
+	char buf[516];
+	size_t len = 0;
+	do
 	{
-		packageArrived = false;
+		len = clientSocket->read_some(boost::asio::buffer(buf), error);
+	} while (error.value() == WSAEWOULDBLOCK);
+
+	if (!error)
+	{
+		strcpy_s(inputPackage, len, buf);
+		ret = true;
 	}
 	else
 	{
-		packageArrived = true;
-
-		if (error != boost::asio::error::eof)											//Se guarda buf en inputPackage (el paquete recibido)
-		{
-			for (unsigned int i = 0; i < PACKAGE_MAX_SIZE; i++)
-			{
-				inputPackage[i] = buf[i];
-			}
-		}
-		else
-			std::cout << "Error while trying to connect to receive package %d" << error.message() << std::endl;
+		ret = false;
 	}
+	return ret;
+}
+
+MYBYTE * Networking::getInputPackage()
+{
+	return inputPackage;
 }
 
 void Networking::callback2(const boost::system::error_code& error, std::size_t transfered_bytes) {
