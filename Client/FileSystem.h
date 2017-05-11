@@ -19,6 +19,7 @@ public:
 private:
 	
 	std::fstream fileStream;
+	std::streamsize dataSize;
 };
 
 #endif // !FILESYSTEM_H

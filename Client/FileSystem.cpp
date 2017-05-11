@@ -19,7 +19,11 @@ bool FileSystem::saveData(std::string data)
 
 std::string FileSystem::readData()
 {
-	char *aux;
+//	std::string ret;
+//	dataSize = 4 + fileStream.readsome(ret.c_str, 512);
+//	return ret;
+
+	char* aux = nullptr;
 	fileStream.read(aux, 512);
 	std::string ret(aux);
 	return ret;

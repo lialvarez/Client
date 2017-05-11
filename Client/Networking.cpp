@@ -128,19 +128,24 @@ void Networking::sendPackage(genericPackage *Pkg)
 {
 	Pkg->setPackage();
 
-	boost::function<void(const boost::system::error_code&, std::size_t)> handler(
-		boost::bind(&Networking::callback1, this,
-			boost::asio::placeholders::error,
-			boost::asio::placeholders::bytes_transferred));
+	char buf[PACKAGE_MAX_SIZE] = "Hello from server.";
 
-	boost::asio::async_write(*clientSocket, boost::asio::buffer(Pkg->package, PACKAGE_MAX_SIZE), handler); //ver si cambiar el 600
+	size_t len;
+	boost::system::error_code error;
+
+	do
+	{
+		len = clientSocket->write_some(boost::asio::buffer(buf, packageSize), error); //declarar y hacer una funcion que ponga packageSize
+	} while ((error.value() == WSAEWOULDBLOCK));
+	if (error)
+		std::cout << "Error while trying to connect to server " << error.message() << std::endl;
 }
 
 bool Networking::receivePackage()
 {
 	bool ret = false;
 	boost::system::error_code error;
-	char buf[516];
+	char buf[PACKAGE_MAX_SIZE];
 	size_t len = 0;
 	do
 	{
@@ -162,7 +167,4 @@ bool Networking::receivePackage()
 MYBYTE * Networking::getInputPackage()
 {
 	return inputPackage;
-}
-
-void Networking::callback2(const boost::system::error_code& error, std::size_t transfered_bytes) {
 }

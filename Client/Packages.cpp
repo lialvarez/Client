@@ -1,4 +1,5 @@
 #include "Packages.h"
+#include "Networking.h"
 #include <fstream>
 
 void ReadRequest::setPackage()
