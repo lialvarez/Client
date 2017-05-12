@@ -1,6 +1,7 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
+#include <vector>
 #include <fstream>
 
 #define SAVE_DIR	"Download/"
@@ -13,9 +14,9 @@ public:
 
 	void closeFile();
 	void openFile(std::string fileName, openMode mode);
-	bool saveData(std::string data);
-	std::string readData();
-	
+	bool saveData(std::vector<char> data);
+	std::vector<char> readData();
+
 private:
 	
 	std::fstream fileStream;

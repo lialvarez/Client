@@ -10,22 +10,21 @@ void FileSystem::openFile(std::string fileName, openMode mode)
 	{
 		fileStream.open(fileName, std::fstream::out | std::fstream::binary);
 	}
+	if (fileStream.fail())
+	{
+
+	}
 }
 
-bool FileSystem::saveData(std::string data)
+bool FileSystem::saveData(std::vector<char> data)
 {
-	fileStream.write(data.c_str(), data.length());
+	fileStream.write(&data[0], data.size());
 }
 
-std::string FileSystem::readData()
-{
-//	std::string ret;
-//	dataSize = 4 + fileStream.readsome(ret.c_str, 512);
-//	return ret;
-
-	char* aux = nullptr;
-	fileStream.read(aux, 512);
-	std::string ret(aux);
+std::vector<char> FileSystem::readData()
+{	
+	std::vector<char> ret;
+	fileStream.read(&ret[0], 512);
 	return ret;
 }
 

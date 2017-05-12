@@ -44,10 +44,10 @@ class ST_ReceiveAck : public genericState
 public:
 
 	genericState* on_Ack(EV_Ack* ev, usefulInfo *Info);
-	genericState* on_Error(EV_Error* ev);
+	genericState* on_Error(EV_Error* ev, usefulInfo *Info);
 	genericState* on_Timeout(EV_Timeout* ev, usefulInfo *Info);
-	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev);
-	genericState* on_LastData(genericEvent* ev, usefulInfo *Info);
+	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev, usefulInfo *Info);
+	genericState* on_LastData(EV_LastData* ev, usefulInfo *Info);
 
 private:
 };
@@ -57,9 +57,9 @@ class ST_ReceiveLastAck : public genericState
 public:
 
 	genericState* on_Ack(EV_Ack* ev, usefulInfo *Info);
-	genericState* on_Error(EV_Error* ev);
+	genericState* on_Error(EV_Error* ev, usefulInfo *Info);
 	genericState* on_Timeout(EV_Timeout* ev, usefulInfo *Info);
-	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev);
+	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev, usefulInfo *Info);
 
 private:
 
@@ -69,10 +69,10 @@ class ST_ReceiveFirstData : public genericState
 {
 public:
 
-	genericState* on_Data(EV_Data* ev);
-	genericState* on_Error(EV_Error* ev);
-	genericState* on_Timeout(EV_Timeout* ev);
-	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev);
+	genericState* on_Data(EV_Data* ev, usefulInfo *Info);
+	genericState* on_Error(EV_Error* ev, usefulInfo *Info);
+	genericState* on_Timeout(EV_Timeout* ev, usefulInfo *Info);
+	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev, usefulInfo *Info);
 
 	std::string getSelectedFile() { return fileToTransfer; }
 	void setFileToTransfer(std::string selectedFile) { this->fileToTransfer = selectedFile; }
@@ -84,11 +84,11 @@ class ST_ReceiveData : public genericState
 {
 public:
 
-	genericState* on_Data(EV_Data* ev);
-	genericState* on_Error(EV_Error* ev);
-	genericState* on_Timeout(EV_Timeout* ev);
-	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev);
-	genericState* on_LastData(EV_LastData* ev);
+	genericState* on_Data(EV_Data* ev, usefulInfo *Info);
+	genericState* on_Error(EV_Error* ev, usefulInfo *Info);
+	genericState* on_Timeout(EV_Timeout* ev, usefulInfo *Info);
+	genericState* on_ConnectionFailed(EV_ConnectionFailed* ev, usefulInfo *Info);
+	genericState* on_LastData(EV_LastData* ev, usefulInfo *Info);
 
 private:
 };

@@ -11,7 +11,6 @@ Networking::Networking(std::string _serverAddress): serverAddress(_serverAddress
 	clientResolver = new boost::asio::ip::tcp::resolver(*IO_handler);
 }
 
-
 Networking::~Networking()
 {
 	clientSocket->close();
@@ -21,7 +20,6 @@ Networking::~Networking()
 	delete IO_handler;
 }
 
-
 void Networking::startConnection()
 {
 	endpoint = clientResolver->resolve(
@@ -30,18 +28,15 @@ void Networking::startConnection()
 	clientSocket->non_blocking(true);
 }
 
-
 std::string Networking::getServerAddres()
 {
 	return serverAddress;
 }
 
-
 unsigned int Networking::getBlockNumber()
 {
 	return blockNumber;
 }
-
 
 void Networking::packageDecode()
 {
@@ -87,14 +82,12 @@ void Networking::sendPackage(genericPackage *Pkg)
 {
 	Pkg->setPackage();
 
-	//char buf[PACKAGE_MAX_SIZE] = "Hello from server."; //esto se borra
-
 	size_t len;
 	boost::system::error_code error;
 
 	do
-	{													//en vez de buf, pasarle un puntero a package
-		len = clientSocket->write_some(boost::asio::buffer(buf, packageSize), error); //declarar y hacer una funcion que ponga packageSize
+	{													
+		len = clientSocket->write_some(boost::asio::buffer(Pkg->package, Pkg->package.size()), error); 
 	} while ((error.value() == WSAEWOULDBLOCK));
 	if (error)
 		std::cout << "Error while trying to connect to server " << error.message() << std::endl;
@@ -113,7 +106,7 @@ bool Networking::receivePackage()
 
 	if (!error)
 	{
-		strcpy_s(inputPackage, len, buf);
+		strcpy_s(&inputPackage[0], len, buf);
 		ret = true;
 	}
 	else
@@ -123,7 +116,7 @@ bool Networking::receivePackage()
 	return ret;
 }
 
-MYBYTE * Networking::getInputPackage()
+std::vector<char> Networking::getInputPackage()
 {
 	return inputPackage;
 }

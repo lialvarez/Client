@@ -117,8 +117,8 @@ private:
 class EV_LastData : public genericEvent
 {
 public:
-	EV_LastData() { ev = LAST_DATA; };
-
+	EV_LastData(Data *_dataPkg) :dataPkg(_dataPkg) { ev = LAST_DATA; };
+	Data *dataPkg;
 private:
 
 };

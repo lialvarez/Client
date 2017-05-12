@@ -25,7 +25,6 @@ public:
 	FileSystem *fileInterface;
 	
 	genericPackage *nextPkg;
-	genericPackage *lastPkg;
 private:
 	std::string serverAddress;
 

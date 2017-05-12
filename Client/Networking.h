@@ -28,12 +28,11 @@ public:
 	std::string getServerAddres();
 	void sendPackage(genericPackage *Pkg);
 	bool receivePackage();
-	MYBYTE *getInputPackage();
+	std::vector<char> getInputPackage();
 	errorCodes getErrorCode();
 	std::string getData();
 	std::string getErrorMsg();
 	unsigned int getBlockNumber();
-
 
 	void startConnection();
 
@@ -54,7 +53,6 @@ private:
 	errorCodes errorCode;
 	unsigned int blockNumber;
 
-	MYBYTE *inputPackage;
-	MYBYTE *outputPackage;
+	std::vector<char> inputPackage;
 };
 #endif // !NETWORKING_H

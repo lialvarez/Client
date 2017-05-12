@@ -13,10 +13,14 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 
 bool NetworkEventSource::isThereEvent()
 { 
+	if (pkg)
+	{
+		delete pkg;
+	}
 	bool ret = false;
 	std::string errorMsg;
 	unsigned int errorCode;
-	std::string data;
+	std::vector<char> data;
 	unsigned int blockNumber;
 	
 	if (networkInterface->receivePackage())	//verifica si se recibio algo
@@ -24,8 +28,8 @@ bool NetworkEventSource::isThereEvent()
 		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
 		{
 		case DATA_OP:
-			data = (char *)networkInterface->getInputPackage()[4];
-			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			data = std::vector<char>(networkInterface->getInputPackage().begin() + 4, networkInterface->getInputPackage().end());
+			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
 			if (blockNumber != expectedBlockNum)
 			{
 				pkg = new Error(NOT_DEFINED, "Block number conflict");
@@ -36,7 +40,7 @@ bool NetworkEventSource::isThereEvent()
 			{
 				pkg = new Data(data, blockNumber);
 				ret = true;
-				if (data.length < 512)
+				if (data.size() < 512)
 				{
 					evCode = LAST_DATA;
 				}
@@ -88,22 +92,18 @@ std::string NetworkEventSource::getServerIP()
 genericEvent * NetworkEventSource::insertEvent()
 {
 	genericEvent * ret;
-
 	switch (evCode)
 	{
 	case DATA:
-		pkg = new Data(networkInterface->getData(), networkInterface->getBlockNumber());
 		ret = (genericEvent *) new EV_Data((Data *)pkg);
 		break;
-	case CONNECTION_FAIL:
-		ret = (genericEvent *) new EV_ConnectionFailed();
+	case LAST_DATA:
+		ret = (genericEvent *) new EV_LastData((Data *)pkg);
 		break;
 	case ACK:
-		pkg = new Acknowledge(networkInterface->getBlockNumber());
 		ret = (genericEvent *) new EV_Ack((Acknowledge *)pkg);
 		break;
 	case ERRO:
-		pkg = new Error(networkInterface->getErrorCode(), networkInterface->getErrorMsg());
 		ret = (genericEvent *) new EV_Error((Error *)pkg);
 		break;
 	default:
