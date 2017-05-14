@@ -17,11 +17,11 @@ public:
 	virtual genericState* on_EmptyCommand(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_FileError(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_InvalidCommand(genericEvent* ev, usefulInfo *Info) { return nullptr; }
-	virtual genericState* on_Data(genericEvent* ev) { return nullptr; }
+	virtual genericState* on_Data(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_Ack(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_Error(genericEvent* ev, usefulInfo *Info) { return nullptr; }
-	virtual genericState* on_WRQ(genericEvent* ev) { return nullptr; }
-	virtual genericState* on_RRQ(genericEvent *ev) { return nullptr; }
+	virtual genericState* on_WRQ(genericEvent* ev, usefulInfo *Info) { return nullptr; }
+	virtual genericState* on_RRQ(genericEvent *ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_ConnectionFailed(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_LastData(genericEvent* ev, usefulInfo *Info) { return nullptr; }
 	virtual genericState* on_Timeout(genericEvent* ev, usefulInfo *Info) { return nullptr; }

@@ -51,7 +51,7 @@ bool NetworkEventSource::isThereEvent()
 			}
 			break;
 		case ACK_OP:
-			blockNumber = (networkInterface->getInputPackage[2] << 8) + networkInterface->getInputPackage()[3];
+			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
 			if (blockNumber != expectedBlockNum)
 			{
 				pkg = new Error(NOT_DEFINED, "Block number conflict");
@@ -109,11 +109,11 @@ genericEvent * NetworkEventSource::insertEvent()
 	default:
 		break;
 	}
+	return ret;
 }
 
 /*****  USER EVENT SOURCE  *****/
 
-//NO TOCAR LOS DE USER, CREO QUE YA ESTAN LISTOS
 
 UserEventSource::UserEventSource(Screen *terminal)
 {
@@ -262,11 +262,6 @@ bool UserEventSource::isThereEvent()
 genericEvent * UserEventSource::insertEvent()
 {
 	genericEvent * ret;
-
-	EV_Put *castedEvP;
-	EV_Get *castedEvG;
-	EV_InvalidCommand * castedEvIC;
-	EV_FileError *castedEvFE;
 	switch (evCode)
 	{
 	case PUT:
@@ -339,6 +334,11 @@ void TimeoutEventSource::startTimer()
 	tInicial = clock();
 	timerRunning = true;
 	timeoutsCount = 0;
+}
+
+void TimeoutEventSource::stopTimer()
+{
+	timerRunning = false;
 }
 
 genericEvent * TimeoutEventSource::insertEvent()

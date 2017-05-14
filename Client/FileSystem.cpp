@@ -16,7 +16,7 @@ void FileSystem::openFile(std::string fileName, openMode mode)
 	}
 }
 
-bool FileSystem::saveData(std::vector<char> data)
+void FileSystem::saveData(std::vector<char> data)
 {
 	fileStream.write(&data[0], data.size());
 }

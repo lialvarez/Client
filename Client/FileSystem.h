@@ -14,7 +14,7 @@ public:
 
 	void closeFile();
 	void openFile(std::string fileName, openMode mode);
-	bool saveData(std::vector<char> data);
+	void saveData(std::vector<char> data);
 	std::vector<char> readData();
 
 private:

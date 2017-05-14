@@ -75,7 +75,7 @@ genericState * ST_ReceiveFirstAck::on_Ack(EV_Ack * ev, usefulInfo *Info)
 	Info->networkSrc->expectedBlockNum++;
 	delete Info->nextPkg;
 	Info->nextPkg =(Data *) new Data(Info->fileInterface->readData(), Info->networkSrc->expectedBlockNum);	//Armo el paquete a enviar
-	Info->networkInterface->sendPackage((Data *)Info->nextPkg);
+	Info->networkInterface->sendPackage(Info->nextPkg);
 	Info->timeoutSrc->startTimer();		//Resetear Timer
 	return (genericState*) new ST_ReceiveAck;
 }
@@ -130,7 +130,7 @@ genericState * ST_ReceiveAck::on_Error(EV_Error * ev, usefulInfo *Info)
 
 genericState * ST_ReceiveAck::on_Timeout(EV_Timeout * ev, usefulInfo *Info)
 {	
-	Info->networkSrc->networkInterface->sendPackage(Info->nextPkg);		//Esta funcion la estaba haciendo Male
+	Info->networkSrc->networkInterface->sendPackage(Info->nextPkg);		
 	Info->timeoutSrc->startTimer();	//Reinicia el timer
 	return nullptr;
 }
@@ -177,7 +177,7 @@ genericState * ST_ReceiveLastAck::on_Error(EV_Error * ev, usefulInfo *Info)
 
 genericState * ST_ReceiveLastAck::on_Timeout(EV_Timeout * ev, usefulInfo *Info)
 {
-	Info->networkInterface->sendPackage(Info->nextPkg);	//Esta funcion la estaba haciendo Male
+	Info->networkInterface->sendPackage(Info->nextPkg);	
 	Info->timeoutSrc->startTimer();	//Reinicia el timer
 	return nullptr;
 }
@@ -196,50 +196,86 @@ genericState * ST_ReceiveLastAck::on_ConnectionFailed(EV_ConnectionFailed * ev, 
 genericState * ST_ReceiveFirstData::on_Data(EV_Data * ev, usefulInfo *Info)
 {
 	Info->fileInterface->openFile(Info->userSrc->getFileToTransfer().c_str(), WRITE);	//abro el archivo.
-
-	return (genericState*) new ST_ReceiveData;
+	Info->fileInterface->saveData(ev->dataPkg->package);	//Escribo el bloque de data en el archivo
+	Info->networkSrc->expectedBlockNum++;	//Incremento el blockNumber
+	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar.
+	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el Ack
+	Info->timeoutSrc->startTimer();	//Reseteo timer.
+	genericState * ret = (genericState *) new ST_ReceiveData();
+	return ret;
 }
 
-genericState * ST_ReceiveFirstData::on_Error(genericEvent * ev)
+genericState * ST_ReceiveFirstData::on_Error(EV_Error * ev, usefulInfo *Info)
 {
-	return (genericState*) new ST_Idle;
+	Info->fileInterface->closeFile();
+	delete Info->nextPkg;
+	Info->timeoutSrc->stopTimer();
+	genericState *ret = (genericState*) new ST_Idle;
+	ret->setLastEvent(ERRO);
+	return ret;
 }
 
-genericState * ST_ReceiveFirstData::on_Timeout(genericEvent * ev)
+genericState * ST_ReceiveFirstData::on_Timeout(EV_Timeout * ev, usefulInfo *Info)
 {
-	//sendRRQ()	//TODO
+	Info->networkInterface->sendPackage(Info->nextPkg);	
+	Info->timeoutSrc->startTimer();	//Reinicia el timer
 	return nullptr;
 }
 
-genericState * ST_ReceiveFirstData::on_ConnectionFailed(genericEvent * ev)
+genericState * ST_ReceiveFirstData::on_ConnectionFailed(EV_ConnectionFailed * ev, usefulInfo *Info)
 {
-	return nullptr;
+	delete Info->nextPkg;
+	genericState *ret = (genericState *) new ST_Idle();
+	ret->setLastEvent(CONNECTION_FAIL);
+	return ret;
 }
 
 //ST_ReceiveData
-genericState * ST_ReceiveData::on_Data(genericEvent * ev)
+genericState * ST_ReceiveData::on_Data(EV_Data * ev, usefulInfo *Info)
 {
-	//sendAck() //TODO
+	Info->fileInterface->saveData(ev->dataPkg->package);	//Escribo el bloque de data en el archivo
+	Info->networkSrc->expectedBlockNum++;
+	delete Info->nextPkg;	//Elimino el paquete anterior
+	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar
+	Info->networkInterface->sendPackage(Info->nextPkg);
+	Info->timeoutSrc->startTimer();
 	return nullptr;
 }
 
-genericState * ST_ReceiveData::on_Error(genericEvent * ev)
+genericState * ST_ReceiveData::on_Error(EV_Error * ev, usefulInfo *Info)
 {
-	return (genericState*) new ST_Idle;
+	Info->fileInterface->closeFile();
+	delete Info->nextPkg;
+	Info->timeoutSrc->stopTimer();
+	genericState *ret = (genericState*) new ST_Idle;
+	ret->setLastEvent(ERRO);
+	return ret;
 }
 
-genericState * ST_ReceiveData::on_Timeout(genericEvent * ev)
+genericState * ST_ReceiveData::on_Timeout(EV_Timeout * ev, usefulInfo *Info)
 {
-	//sendAck() //TODO
+	Info->networkInterface->sendPackage(Info->nextPkg);
+	Info->timeoutSrc->startTimer();	//Reinicia el timer
 	return nullptr;
 }
 
-genericState * ST_ReceiveData::on_ConnectionFailed(genericEvent * ev)
+genericState * ST_ReceiveData::on_ConnectionFailed(EV_ConnectionFailed * ev, usefulInfo *Info)
 {
-	return nullptr;
+	delete Info->nextPkg;
+	genericState *ret = (genericState *) new ST_Idle();
+	ret->setLastEvent(CONNECTION_FAIL);
+	return ret;
 }
 
-genericState * ST_ReceiveData::on_LastData(genericEvent * ev)
+genericState * ST_ReceiveData::on_LastData(EV_LastData * ev, usefulInfo *Info)
 {
-	return (genericState*) new ST_Idle;
+	Info->fileInterface->saveData(ev->dataPkg->package);	//Escribo el bloque de data en el archivo
+	Info->networkSrc->expectedBlockNum++;
+	delete Info->nextPkg;	//Elimino el paquete anterior
+	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar
+	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el ultimo paquete de data
+	Info->fileInterface->closeFile();	//Cierro el archivo
+	Info->timeoutSrc->startTimer();	//Reinicio el timer
+	genericState * ret = (genericState *) new ST_ReceiveLastAck();
+	return ret;
 }

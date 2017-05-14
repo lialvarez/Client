@@ -17,8 +17,7 @@
 
 typedef char MYBYTE;
 
-typedef enum { RRQ_OP = 1, WRQ_OP, DATA_OP, ACK_OP, ERROR_OP }opCodes;
-typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
+
 
 class Networking
 {
