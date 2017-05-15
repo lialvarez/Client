@@ -3,20 +3,20 @@
 void eventGenerator::generateEvent()
 {
 
-	//if (I->software->isThereEvent())
-	//{
-	//	buffer.push_back(I->software->insertEvent());
-	//}
+	if (I->softwareSrc->isThereEvent())
+	{
+		buffer.push_back(I->softwareSrc->insertEvent());
+	}
 
-	//if (I->network->isThereEvent())
-	//{
-	//	buffer.push_back(I->network->insertEvent());
-	//}
+	if (I->networkSrc->isThereEvent())
+	{
+		buffer.push_back(I->networkSrc->insertEvent());
+	}
 
-	//if (I->timeout->isThereEvent())
-	//{
-	//	buffer.push_back(I->timeout->insertEvent());
-	//}
+	if (I->timeoutSrc->isThereEvent())
+	{
+		buffer.push_back(I->timeoutSrc->insertEvent());
+	}
 
 	if (I->userSrc->isThereEvent())
 	{
