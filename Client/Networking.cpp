@@ -90,7 +90,10 @@ void Networking::sendPackage(genericPackage *Pkg)
 		len = clientSocket->write_some(boost::asio::buffer(Pkg->package, Pkg->package.size()), error); 
 	} while ((error.value() == WSAEWOULDBLOCK));
 	if (error)
-		std::cout << "Error while trying to connect to server " << error.message() << std::endl;
+	{ 
+		/*std::cout << "Error while trying to connect to server " << error.message() << std::endl;*/
+	}
+		
 }
 
 bool Networking::receivePackage()

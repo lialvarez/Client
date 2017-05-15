@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 	unsigned int connectAttempt = 0;
 	do
 	{
-		Network.startConnection();
+		/*Network.startConnection();*/
 
 		do //Si hay conexion, entro en la FSM
 		{

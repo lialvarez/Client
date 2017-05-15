@@ -215,21 +215,12 @@ bool UserEventSource::isThereEvent()
 
 				}
 
+
 			}
 			else if (strcmp(words[0].c_str(), "get") == 0)
 			{
-				if (auxFile.fail())
-				{
-					ret = true;
-					evCode = FILE_ERROR;
-				}
-				else
-				{
-					auxFile.close();
-					evCode = GET;
-					ret = true;
-				}
-
+				evCode = GET;
+				ret = true;
 			}
 			else
 			{
