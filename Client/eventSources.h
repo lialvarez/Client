@@ -8,6 +8,7 @@
 #include "Packages.h"
 #include "Screen.h"
 #include "Networking.h"
+#include "FileSystem.h"
 #include "genericEventSource.h"
 #include <boost\asio\deadline_timer.hpp>
 #include <boost/bind.hpp>
@@ -26,8 +27,11 @@ public:
 	void setServerIP(std::string _serverIP);
 	std::string getServerIP();
 	Networking *networkInterface;
-	genericPackage *pkg;
 	unsigned int expectedBlockNum;
+	std::vector<char> data;	//Se almacena la data en caso de recibir DATA
+	std::string errorMsg;
+	errorCodes errorCode;
+	unsigned int blockNumber;
 private:
 
 	std::string serverIP;
@@ -73,9 +77,9 @@ class SoftwareEventSource : public genericEventSource
 {
 public:
 	SoftwareEventSource();
-	~SoftwareEventSource();
 	bool isThereEvent();
-	//loadSoftwareEvent(ev); //TODO: agregar una funcion para cargar eventos de software
+	genericEvent* insertEvent();
+	FileSystem *fileInterface;
 };
 
 #endif // !EVENTSOURCES_H

@@ -8,7 +8,9 @@ void ReadRequest::setPackage()
 	package.push_back(0x00);
 	package.push_back((MYBYTE)RRQ_OP);
 	std::copy(fileName.begin(), fileName.end(), std::back_inserter(package));
+	package.push_back('\0');
 	std::copy(mode.begin(), mode.end(), std::back_inserter(package));
+	package.push_back('\0');
 }
 
 void WriteRequest::setPackage()
@@ -17,7 +19,9 @@ void WriteRequest::setPackage()
 	package.push_back(0x00);
 	package.push_back((MYBYTE)WRQ_OP);
 	std::copy(fileName.begin(), fileName.end(), std::back_inserter(package));
+	package.push_back('\0');
 	std::copy(mode.begin(), mode.end(), std::back_inserter(package));
+	package.push_back('\0');
 }
 
 void Acknowledge::setPackage()

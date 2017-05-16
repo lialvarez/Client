@@ -2,7 +2,6 @@
 
 void eventGenerator::generateEvent()
 {
-
 	if (I->softwareSrc->isThereEvent())
 	{
 		buffer.push_back(I->softwareSrc->insertEvent());

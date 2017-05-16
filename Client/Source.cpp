@@ -23,20 +23,27 @@ typedef struct
 int main(int argc, char *argv[])
 {
 	userData_t userData;
+	userData.serverAddress = std::string(argv[1]);
+
+
 	Screen Terminal;
+	FileSystem fileSystem;
 	Networking Network(userData.serverAddress);
 	NetworkEventSource networkSource(&Network);
 	UserEventSource userSource(&Terminal);
 	TimeoutEventSource timeoutSource;
-	usefulInfo Info(userData.serverAddress, &userSource, &timeoutSource, &networkSource);	//Se crea la instancia de usefulInfo
+	SoftwareEventSource Software;
+	usefulInfo Info(userData.serverAddress, &userSource, &timeoutSource, &networkSource, &fileSystem, &Software);	//Se crea la instancia de usefulInfo
 	eventGenerator evGen(&Info);	//creo la instancia del generador de eventos
 	genericEvent *ev;
 	genericFSM FSM;
 
+	
+
 	unsigned int connectAttempt = 0;
 	do
 	{
-		/*Network.startConnection();*/
+		Network.startConnection();
 
 		do //Si hay conexion, entro en la FSM
 		{

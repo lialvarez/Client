@@ -102,14 +102,17 @@ bool Networking::receivePackage()
 	boost::system::error_code error;
 	char buf[PACKAGE_MAX_SIZE];
 	size_t len = 0;
-	do
-	{
-		len = clientSocket->read_some(boost::asio::buffer(buf), error);
-	} while (error.value() == WSAEWOULDBLOCK);
+	len = clientSocket->read_some(boost::asio::buffer(buf), error);
+	//do
+	//{
+	//	len = clientSocket->read_some(boost::asio::buffer(buf), error);
+	//} while (error.value() != WSAEWOULDBLOCK);
 
 	if (!error)
 	{
-		strcpy_s(&inputPackage[0], len, buf);
+		//strcpy_s(&inputPackage[0], len, buf);
+		inputPackage.clear();
+		inputPackage.insert(inputPackage.end(), buf, buf + len);
 		ret = true;
 	}
 	else

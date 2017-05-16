@@ -12,33 +12,27 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 }
 
 bool NetworkEventSource::isThereEvent()
-{ 
-	if (pkg)
-	{
-		delete pkg;
-	}
+{
+	unsigned int blockLow, blockHigh;
 	bool ret = false;
-	std::string errorMsg;
-	unsigned int errorCode;
-	std::vector<char> data;
-	unsigned int blockNumber;
-	
+	std::vector<char> aux;
 	if (networkInterface->receivePackage())	//verifica si se recibio algo
 	{
 		switch (networkInterface->getInputPackage()[1])	//segun el tipo de paquete devuelvo el tipo de evento
 		{
 		case DATA_OP:
-			data = std::vector<char>(networkInterface->getInputPackage().begin() + 4, networkInterface->getInputPackage().end());
-			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
+			aux = std::vector<char>(networkInterface->getInputPackage());
+			data = std::vector<char>(aux.begin() + 4, aux.end());
+			blockLow = (unsigned int)networkInterface->getInputPackage()[3];
+			blockHigh = (unsigned int)networkInterface->getInputPackage()[2];
+			blockNumber = ((blockHigh & 0x00FF) << 8) + (blockLow & 0x00FF);
 			if (blockNumber != expectedBlockNum)
 			{
-				pkg = new Error(NOT_DEFINED, "Block number conflict");
 				ret = true;
 				evCode = ERRO;
 			}
 			else
 			{
-				pkg = new Data(data, blockNumber);
 				ret = true;
 				if (data.size() < 512)
 				{
@@ -54,21 +48,25 @@ bool NetworkEventSource::isThereEvent()
 			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
 			if (blockNumber != expectedBlockNum)
 			{
-				pkg = new Error(NOT_DEFINED, "Block number conflict");
 				ret = true;
 				evCode = ERRO;
 			}
 			else
 			{
-				pkg = new Acknowledge(blockNumber);
 				ret = true;
 				evCode = ACK;
 			}
 			break;
 		case ERROR_OP:
-			errorCode = networkInterface->getInputPackage()[2];
-			errorMsg = (char *)networkInterface->getInputPackage()[4];
-			pkg = new Error(errorCode, errorMsg);
+			errorCode = (errorCodes)networkInterface->getInputPackage()[3];
+			if (errorCode == NOT_DEFINED)
+			{
+				errorMsg = (char *)networkInterface->getInputPackage()[4];
+			}
+			else
+			{
+				errorMsg = "";
+			}
 			ret = true;
 			evCode = ERRO;
 			break;
@@ -95,16 +93,16 @@ genericEvent * NetworkEventSource::insertEvent()
 	switch (evCode)
 	{
 	case DATA:
-		ret = (genericEvent *) new EV_Data((Data *)pkg);
+		ret = (genericEvent *) new EV_Data();
 		break;
 	case LAST_DATA:
-		ret = (genericEvent *) new EV_LastData((Data *)pkg);
+		ret = (genericEvent *) new EV_LastData();
 		break;
 	case ACK:
-		ret = (genericEvent *) new EV_Ack((Acknowledge *)pkg);
+		ret = (genericEvent *) new EV_Ack();
 		break;
 	case ERRO:
-		ret = (genericEvent *) new EV_Error((Error *)pkg);
+		ret = (genericEvent *) new EV_Error();
 		break;
 	default:
 		break;
@@ -113,7 +111,6 @@ genericEvent * NetworkEventSource::insertEvent()
 }
 
 /*****  USER EVENT SOURCE  *****/
-
 
 UserEventSource::UserEventSource(Screen *terminal)
 {
@@ -164,8 +161,9 @@ bool UserEventSource::isThereEvent()
 	case ENTER:
 
 		command = std::string(buffer.begin(), buffer.end());	//Almaceno la linea de comando ingresada en command
-		std::transform(command.begin(), command.end(), command.begin(), tolower);	//transformo la linea ingresada a minuscula
 		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
+		std::transform(words[0].begin(), words[0].end(), words[0].begin(), tolower);	//transformo la linea ingresada a minuscula
+		
 
 		if (words[0].size() == 0)	//Si no se ingresaron comandos
 		{
@@ -256,10 +254,10 @@ genericEvent * UserEventSource::insertEvent()
 	switch (evCode)
 	{
 	case PUT:
-		ret = (genericEvent *) new EV_Put(fileToTransfer);
+		ret = (genericEvent *) new EV_Put();
 		break;
 	case GET:
-		ret = (genericEvent *) new EV_Get(fileToTransfer);
+		ret = (genericEvent *) new EV_Get();
 		break;
 	case HELP:
 		ret = (genericEvent *) new EV_Help();
@@ -271,10 +269,10 @@ genericEvent * UserEventSource::insertEvent()
 		ret = (genericEvent *) new EV_EmptyCommand();
 		break;
 	case INVALID:
-		ret = (genericEvent *) new EV_InvalidCommand(command);
+		ret = (genericEvent *) new EV_InvalidCommand();
 		break;
 	case FILE_ERROR:
-		ret = (genericEvent *) new EV_FileError(fileToTransfer);
+		ret = (genericEvent *) new EV_FileError();
 		break;
 	case QUIT:
 		ret = (genericEvent *) new EV_Quit;
@@ -341,9 +339,6 @@ genericEvent * TimeoutEventSource::insertEvent()
 	case TIMEOUT:
 		ret = (genericEvent *) new EV_Timeout;
 		break;
-	case CONNECTION_FAIL:
-		ret = (genericEvent *) new EV_ConnectionFailed;
-		break;
 	default:
 		break;
 	}
@@ -353,5 +348,24 @@ genericEvent * TimeoutEventSource::insertEvent()
 /*****  SOFTWARE EVENT SOURCE   *****/
 
 SoftwareEventSource::SoftwareEventSource() {};
-SoftwareEventSource::~SoftwareEventSource() {}
-bool SoftwareEventSource::isThereEvent() { return false; };
+
+bool SoftwareEventSource::isThereEvent() 
+{
+	bool ret = false;
+	if (fileInterface->lastData)
+	{
+		evCode = LAST_DATA;
+		ret = true;
+	}
+	return ret;
+};
+
+genericEvent* SoftwareEventSource::insertEvent()
+{
+	genericEvent *ret;
+	if (evCode == LAST_DATA)
+	{
+		ret = (genericEvent *) new EV_LastData();
+	}
+	return ret;
+}

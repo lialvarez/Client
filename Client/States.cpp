@@ -8,9 +8,9 @@
 genericState *ST_Idle::on_Put(genericEvent *ev, usefulInfo *Info)
 {
 	Info->networkSrc->expectedBlockNum = 0;	//Setea el block number que deberia tener el proximo ACK
-	Info->fileInterface->openFile(ev->getSelectedFile(), READ);	//Abre el archivo en el modo indicado
+	Info->fileInterface->openFile(Info->userSrc->getFileToTransfer(), READ);	//Abre el archivo en el modo indicado
 	Info->nextPkg = new WriteRequest(Info->userSrc->getFileToTransfer(), "octet");	//Copia el ultimo paquete enviado
-	Info->networkInterface->sendPackage((WriteRequest *)Info->nextPkg);	//Funcion que envia el WRQ con el nombre del archivo
+	Info->networkInterface->sendPackage(Info->nextPkg);	//Funcion que envia el WRQ con el nombre del archivo
 	Info->timeoutSrc->startTimer();	//Inicia el timer
 	genericState *ret = (genericState *) new ST_ReceiveFirstAck();
 	return ret;
@@ -86,7 +86,8 @@ genericState * ST_ReceiveFirstAck::on_Error(genericEvent * ev, usefulInfo *Info)
 	Info->fileInterface->closeFile();	//Cerrar el archivo
 	delete Info->nextPkg;	//Elimino el ultimo paquete enviado
 	Info->timeoutSrc->stopTimer();	//Detener el timer
-	Info->userInterface->errorMsg(Info->networkSrc->networkInterface->getErrorCode(), Info->networkSrc->networkInterface->getErrorMsg());
+	Info->userInterface->errorMsg(Info->networkSrc->errorCode, Info->networkSrc->errorMsg);
+	Info->userInterface->setCommandLine();
 	genericState *ret = (genericState *) new ST_Idle;
 	ret->setLastEvent(ERRO);	//Setear el ultimo evento en Error para resetear la FSM
 	return ret;
