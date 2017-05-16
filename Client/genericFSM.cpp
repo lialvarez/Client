@@ -35,7 +35,7 @@ void genericFSM::dispatch(genericEvent *ev, usefulInfo *Info)
 			newState = currentState->on_CloseClient(ev);
 			break;
 		case HELP:
-			newState = currentState->on_Help(ev, Info);
+			newState = currentState->on_HelpRequest(ev, Info);
 			break;
 		case CLEAR:
 			newState = currentState->on_ClearTerminal(ev, Info);
@@ -66,6 +66,7 @@ void genericFSM::dispatch(genericEvent *ev, usefulInfo *Info)
 			break;
 		case LAST_DATA:
 			newState = currentState->on_LastData(ev, Info);
+			Info->fileInterface->lastData = false;
 			break;
 		case TIMEOUT:
 			newState = currentState->on_Timeout(ev, Info);

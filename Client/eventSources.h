@@ -78,6 +78,7 @@ class SoftwareEventSource : public genericEventSource
 public:
 	SoftwareEventSource();
 	bool isThereEvent();
+	bool ev;
 	genericEvent* insertEvent();
 	FileSystem *fileInterface;
 };

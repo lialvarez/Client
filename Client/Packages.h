@@ -11,7 +11,7 @@ typedef enum { NOT_DEFINED = 1, FILE_NOT_FOUND, FILE_ALREADY_EXISTS }errorCodes;
 class genericPackage
 {
 public:
-	std::vector<char> package;
+	std::vector<unsigned char> package;
 	virtual void setPackage() = 0;
 	opCodes code;
 };

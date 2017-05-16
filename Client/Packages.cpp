@@ -29,7 +29,7 @@ void Acknowledge::setPackage()
 	package.clear();
 	package.push_back(0x00);
 	package.push_back((MYBYTE)ACK_OP);
-	package.push_back((blockNumber & 0xFF00) >> 8);
+	package.push_back(blockNumber >> 8);
 	package.push_back(blockNumber & 0x00FF);
 }
 
@@ -42,7 +42,7 @@ void Data::setPackage()
 {
 	package.push_back(0x00);
 	package.push_back((MYBYTE)DATA_OP);
-	package.push_back((blockNumber & 0xFF00) >> 8);
+	package.push_back(blockNumber >> 8);
 	package.push_back(blockNumber & 0x00FF);
 	package.insert(package.end(), data.begin(), data.end());
 }

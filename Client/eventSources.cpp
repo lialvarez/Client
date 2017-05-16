@@ -13,7 +13,7 @@ NetworkEventSource::NetworkEventSource(Networking *_networkInterface) :networkIn
 
 bool NetworkEventSource::isThereEvent()
 {
-	unsigned int blockLow, blockHigh;
+	unsigned char blockLow, blockHigh;
 	bool ret = false;
 	std::vector<char> aux;
 	if (networkInterface->receivePackage())	//verifica si se recibio algo
@@ -23,9 +23,12 @@ bool NetworkEventSource::isThereEvent()
 		case DATA_OP:
 			aux = std::vector<char>(networkInterface->getInputPackage());
 			data = std::vector<char>(aux.begin() + 4, aux.end());
-			blockLow = (unsigned int)networkInterface->getInputPackage()[3];
-			blockHigh = (unsigned int)networkInterface->getInputPackage()[2];
-			blockNumber = ((blockHigh & 0x00FF) << 8) + (blockLow & 0x00FF);
+			blockLow = networkInterface->getInputPackage()[3];
+			blockHigh = networkInterface->getInputPackage()[2];
+
+			blockNumber = blockHigh;
+			blockNumber = (blockNumber << 8) + blockLow;
+			
 			if (blockNumber != expectedBlockNum)
 			{
 				ret = true;
@@ -45,7 +48,12 @@ bool NetworkEventSource::isThereEvent()
 			}
 			break;
 		case ACK_OP:
-			blockNumber = (networkInterface->getInputPackage()[2] << 8) + networkInterface->getInputPackage()[3];
+			blockLow = networkInterface->getInputPackage()[3];
+			blockHigh = networkInterface->getInputPackage()[2];
+
+			blockNumber = blockHigh;
+			blockNumber = (blockNumber << 8) + blockLow;
+		
 			if (blockNumber != expectedBlockNum)
 			{
 				ret = true;
@@ -367,5 +375,6 @@ genericEvent* SoftwareEventSource::insertEvent()
 	{
 		ret = (genericEvent *) new EV_LastData();
 	}
+	ev = false;
 	return ret;
 }

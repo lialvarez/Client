@@ -55,6 +55,7 @@ void Screen::outputHelp()
 			printw(line.c_str());
 			move(terminalWindow->_cury + 1, 0);
 		}
+		refresh();
 	}
 	else
 	{
@@ -101,11 +102,11 @@ void Screen::errorMsg(errorCodes code, std::string errorMsg)
 		refresh();
 		break;
 	case FILE_NOT_FOUND:
-		printw("\nError: The requested file was not found");
+		printw("\nError: The requested file was not found\n");
 		refresh();
 		break;
 	case FILE_ALREADY_EXISTS:
-		printw("\nError: Selected file already exists");
+		printw("\nError: Selected file already exists\n");
 		refresh();
 		break;
 	default:

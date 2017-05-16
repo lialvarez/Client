@@ -77,7 +77,6 @@ std::string Networking::getData()
 	return data;
 }
 
-
 void Networking::sendPackage(genericPackage *Pkg)
 {
 	Pkg->setPackage();
