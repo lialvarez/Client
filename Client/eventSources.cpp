@@ -359,13 +359,12 @@ SoftwareEventSource::SoftwareEventSource() {};
 
 bool SoftwareEventSource::isThereEvent() 
 {
-	bool ret = false;
 	if (fileInterface->lastData)
 	{
 		evCode = LAST_DATA;
-		ret = true;
+		ev= true;
 	}
-	return ret;
+	return ev;
 };
 
 genericEvent* SoftwareEventSource::insertEvent()

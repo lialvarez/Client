@@ -59,18 +59,15 @@ void Networking::packageDecode()
 	}
 }
 
-
 errorCodes Networking::getErrorCode()
 {
 	return errorCode;
 }
 
-
 std::string Networking::getErrorMsg()
 {
 	return errorMsg;
 }
-
 
 std::string Networking::getData()
 {
