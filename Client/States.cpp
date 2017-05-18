@@ -33,12 +33,12 @@ genericState *ST_Idle::on_HelpRequest(genericEvent *ev, usefulInfo *Info)
 	return ret;
 }
 
-genericState *ST_Idle::on_CloseClient(genericEvent* ev)
-{
-	genericState *ret = (genericState*) new ST_Idle;
-	ret->setLastEvent(QUIT);
-	return ret;
-}
+//genericState *ST_Idle::on_CloseClient(genericEvent* ev)
+//{
+//	genericState *ret = (genericState*) new ST_Idle;
+//	ret->setLastEvent(QUIT);
+//	return ret;
+//}
 
 genericState *ST_Idle::on_ClearTerminal(genericEvent *ev, usefulInfo *Info)
 {
@@ -193,7 +193,7 @@ genericState * ST_ReceiveLastAck::on_ConnectionFailed(genericEvent * ev, usefulI
 genericState * ST_ReceiveFirstData::on_Data(genericEvent * ev, usefulInfo *Info)
 {
 	Info->fileInterface->openFile(Info->userSrc->getFileToTransfer().c_str(), WRITE);	//abro el archivo.
-	Info->fileInterface->saveData(Info->networkSrc->networkInterface->getInputPackage());	//Escribo el bloque de data en el archivo
+	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 	//++Info->networkSrc->expectedBlockNum;	//Incremento el blockNumber
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum++);	//Construyo el Ack a enviar.
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el Ack
@@ -232,7 +232,7 @@ genericState * ST_ReceiveFirstData::on_ConnectionFailed(genericEvent * ev, usefu
 genericState * ST_ReceiveFirstData::on_LastData(genericEvent *ev, usefulInfo *Info)
 {
 	Info->fileInterface->openFile(Info->userSrc->getFileToTransfer().c_str(), WRITE);	//abro el archivo.
-	Info->fileInterface->saveData(Info->networkSrc->networkInterface->getInputPackage());	//Escribo el bloque de data en el archivo
+	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 	delete Info->nextPkg;	//Elimino el paquete anterior
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar
 	Info->networkInterface->sendPackage(Info->nextPkg);	//Envio el ultimo paquete de data
@@ -248,7 +248,7 @@ genericState * ST_ReceiveFirstData::on_LastData(genericEvent *ev, usefulInfo *In
 //ST_ReceiveData
 genericState * ST_ReceiveData::on_Data(genericEvent * ev, usefulInfo *Info)
 {
-	Info->fileInterface->saveData(Info->networkSrc->networkInterface->getInputPackage());	//Escribo el bloque de data en el archivo
+	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 	//++Info->networkSrc->expectedBlockNum;
 	delete Info->nextPkg;	//Elimino el paquete anterior
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum++);	//Construyo el Ack a enviar
@@ -284,7 +284,7 @@ genericState * ST_ReceiveData::on_ConnectionFailed(genericEvent * ev, usefulInfo
 
 genericState * ST_ReceiveData::on_LastData(genericEvent * ev, usefulInfo *Info)
 {
-	Info->fileInterface->saveData(Info->networkSrc->networkInterface->getInputPackage());	//Escribo el bloque de data en el archivo
+	Info->fileInterface->saveData(Info->networkSrc->data);	//Escribo el bloque de data en el archivo
 	//++Info->networkSrc->expectedBlockNum;
 	delete Info->nextPkg;	//Elimino el paquete anterior
 	Info->nextPkg = new Acknowledge(Info->networkSrc->expectedBlockNum);	//Construyo el Ack a enviar

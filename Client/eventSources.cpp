@@ -169,45 +169,35 @@ bool UserEventSource::isThereEvent()
 	case ENTER:
 
 		command = std::string(buffer.begin(), buffer.end());	//Almaceno la linea de comando ingresada en command
-		boost::split(words, command, boost::is_any_of(", "), boost::token_compress_on);	//Se separan las palabras ingresadas
-		std::transform(words[0].begin(), words[0].end(), words[0].begin(), tolower);	//transformo la linea ingresada a minuscula
-		
+		fileToTransfer = command.substr(command.find(' ') + 1);
+		command = command.substr(0, command.find(' '));
+		std::transform(command.begin(), command.end(), command.begin(), tolower);
 
-		if (words[0].size() == 0)	//Si no se ingresaron comandos
+		if (command.length() == 0)
 		{
 			evCode = EMPTY_COMMAND;
 			ret = true;
 		}
-		else if (words.size() == 1)	//Si se ingreso un comando de una sola palabra
+		else
 		{
-			if (strcmp(words[0].c_str(), "help") == 0)
+			if (command.compare("help") == 0)
 			{
 				evCode = HELP;
 				ret = true;
 			}
-			else if (strcmp(words[0].c_str(), "quit") == 0)
+			else if (command.compare("quit") == 0)
 			{
 				evCode = QUIT;
 				ret = true;
 			}
-			else if (strcmp(words[0].c_str(), "clear") == 0)
+			else if (command.compare("clear") == 0)
 			{
 				evCode = CLEAR;
 				ret = true;
 			}
-			else
+			else if (command.compare("put") == 0)
 			{
-				evCode = INVALID;
-				ret = true;
-			}
-		}
-		else if (words.size() == 2)	//Si se ingreso un comando con dos "palabras"
-		{
-			fileToTransfer = words[1];
-			auxFile.open(words[1].c_str());
-			if (strcmp(words[0].c_str(), "put") == 0)
-			{
-
+				auxFile.open(fileToTransfer);
 				if (auxFile.fail())
 				{
 					ret = true;
@@ -220,10 +210,8 @@ bool UserEventSource::isThereEvent()
 					ret = true;
 
 				}
-
-
 			}
-			else if (strcmp(words[0].c_str(), "get") == 0)
+			else if (command.compare("get") == 0)
 			{
 				evCode = GET;
 				ret = true;
@@ -234,13 +222,8 @@ bool UserEventSource::isThereEvent()
 				ret = true;
 			}
 		}
-		else	//Si no es ninguna de las anteriores estoy seguro de que el comando es invalido
-		{
-			ret = true;
-			evCode = INVALID;
-		}
+
 		buffer.clear();	//Limpia el buffer
-		words.clear();	//Limpia el vector
 		break;
 
 	default:

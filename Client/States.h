@@ -17,7 +17,7 @@ public:
 
 	genericState* on_FileError(genericEvent *ev, usefulInfo *Info);
 	genericState* on_InvalidCommand(genericEvent *ev, usefulInfo *Info);
-	genericState* on_CloseClient(genericEvent* ev);
+	//genericState* on_CloseClient(genericEvent* ev);
 	genericState* on_HelpRequest(genericEvent *ev, usefulInfo *Info);
 	genericState* on_ClearTerminal(genericEvent *ev, usefulInfo *Info);
 	genericState* on_EmptyCommand(genericEvent *ev, usefulInfo *Info);

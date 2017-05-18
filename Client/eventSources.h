@@ -49,7 +49,6 @@ public:
 private:
 
 	std::string fileToTransfer;
-	std::vector<std::string> words;	//Vector para separar los argumentos ingresados
 	std::vector<char> buffer;
 	std::string command;
 

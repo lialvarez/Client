@@ -2,6 +2,11 @@
 
 void eventGenerator::generateEvent()
 {
+	if (I->userSrc->isThereEvent())
+	{
+		buffer.push_back(I->userSrc->insertEvent());
+	}
+
 	if (I->softwareSrc->isThereEvent())
 	{
 		buffer.push_back(I->softwareSrc->insertEvent());
