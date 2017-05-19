@@ -172,7 +172,7 @@
     <ClCompile Include="Packages.cpp" />
     <ClCompile Include="parseCmdLine.c" />
     <ClCompile Include="Screen.cpp" />
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="States.cpp" />
   </ItemGroup>
   <ItemGroup>

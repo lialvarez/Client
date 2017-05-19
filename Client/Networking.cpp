@@ -22,9 +22,21 @@ Networking::~Networking()
 
 void Networking::startConnection()
 {
+	bool exit;
 	endpoint = clientResolver->resolve(
 		boost::asio::ip::tcp::resolver::query(serverAddress.c_str(), CONNECTION_PORT));
-	boost::asio::connect(*clientSocket, endpoint);
+	do
+	{
+		exit = true;
+		try
+		{
+			boost::asio::connect(*clientSocket, endpoint);
+		}
+		catch (const std::exception& e)
+		{
+			exit = false;
+		}
+	} while (!exit);
 	clientSocket->non_blocking(true);
 }
 

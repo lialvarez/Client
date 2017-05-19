@@ -136,8 +136,15 @@ std::string UserEventSource::getFileToTransfer()
 	return fileToTransfer;	//Devuelve el nombre del archivo a transferir
 }
 
+std::string UserEventSource::getOrigFileToTransfer()
+{
+	return origFileToTransfer;
+}
+
 bool UserEventSource::isThereEvent()
 {
+	std::size_t found;
+	std::string auxstr;
 	std::fstream auxFile;
 	bool ret = false;
 	inputChar = getch();
@@ -172,7 +179,7 @@ bool UserEventSource::isThereEvent()
 		fileToTransfer = command.substr(command.find(' ') + 1);
 		command = command.substr(0, command.find(' '));
 		std::transform(command.begin(), command.end(), command.begin(), tolower);
-
+		origFileToTransfer = fileToTransfer;
 		if (command.length() == 0)
 		{
 			evCode = EMPTY_COMMAND;
@@ -197,6 +204,7 @@ bool UserEventSource::isThereEvent()
 			}
 			else if (command.compare("put") == 0)
 			{
+
 				auxFile.open(fileToTransfer);
 				if (auxFile.fail())
 				{
@@ -207,13 +215,26 @@ bool UserEventSource::isThereEvent()
 				{
 					auxFile.close();
 					evCode = PUT;
+					auxstr = fileToTransfer;
+					do
+					{
+						found = auxstr.find('/');
+						auxstr = auxstr.substr(found + 1);
+					} while (found != std::string::npos);
+					fileToTransfer = auxstr;
 					ret = true;
-
 				}
 			}
 			else if (command.compare("get") == 0)
 			{
 				evCode = GET;
+				auxstr = fileToTransfer;
+				do
+				{
+					found = auxstr.find('/');
+					auxstr = auxstr.substr(found + 1);
+				} while (found != std::string::npos);
+				fileToTransfer = auxstr;
 				ret = true;
 			}
 			else
@@ -222,7 +243,7 @@ bool UserEventSource::isThereEvent()
 				ret = true;
 			}
 		}
-
+		terminal->setCommandLine();
 		buffer.clear();	//Limpia el buffer
 		break;
 
@@ -234,6 +255,7 @@ bool UserEventSource::isThereEvent()
 			buffer.push_back(inputChar);
 			ret = false;
 		}
+		terminal->inputPos++;
 		break;
 	}
 	return ret;

@@ -19,18 +19,20 @@ public:
 	Screen();
 	
 	void initTerminal();
+	void shiftLinesUp();
+	void putNext(std::string inputText);
+	void putClear(std::string inputText);
 	void outputHelp();
 	void outputInvalid(std::string command);
 	void setCommandLine();
-	void resetTerminal();
 	void errorMsg(errorCodes code, std::string errorMsg);
 	void fileErrorMsg(std::string fileName);
 	void fileSendEnd(std::string fileName);
 	void fileREceiveEnd(std::string fileName);
-
+	unsigned inputPos;
 	WINDOW * terminalWindow;
 private:
-	
+	unsigned lastLine;
 
 };
 #endif // !SCREEN_H

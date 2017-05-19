@@ -1,10 +1,14 @@
 1. Comando PUT:
 Envia un WRQ al servidor del archivo indicado.
+
 Uso: Client>PUT <nombre del archivo>
+Ejemplo:PUT rutaDelArchivo/nombreDelArchivo.txt
 
 2. Comando GET:
 Envia un RRQ al servidor del archivo indicado.
+
 Uso: Client>GET <nombre del archivo>
+Ejemplo:PUT rutaDelArchivo/nombreDel
 
 3. Comando CLEAR:
 Borra el contenido del terminal.

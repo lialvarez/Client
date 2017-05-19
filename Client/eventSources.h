@@ -44,10 +44,11 @@ public:
 	bool isThereEvent();
 	genericEvent* insertEvent();
 	std::string getFileToTransfer();	//getter del nombre del archivo a transferir
+	std::string getOrigFileToTransfer();
 	std::string getCommand();	//getter del commando ingresado
 	Screen *terminal;
 private:
-
+	std::string origFileToTransfer;
 	std::string fileToTransfer;
 	std::vector<char> buffer;
 	std::string command;
