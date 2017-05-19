@@ -59,9 +59,6 @@ int main(int argc, char *argv[])
 	genericEvent *ev;
 	genericFSM FSM;
 
-	
-
-	unsigned int connectAttempt = 0;
 	do
 	{
 		Network.startConnection();
